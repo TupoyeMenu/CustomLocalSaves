@@ -15,6 +15,7 @@
 #include "fm_maintain_cloud_header_data.hpp"
 #include "crossmap.hpp"
 #include "gta_util.hpp"
+#include "invoker.hpp"
 
 #include <script/scrProgram.hpp>
 #include <script/scrProgramTable.hpp>
@@ -72,7 +73,7 @@ namespace big
 			auto native = replacement_hash;
 			map_native(&native);
 
-			auto og_handler = g_pointers->m_get_native_handler(g_pointers->m_native_registration_table, native);
+			auto og_handler = g_native_invoker.get_native_handler(native);
 			if (!og_handler)
 				continue;
 

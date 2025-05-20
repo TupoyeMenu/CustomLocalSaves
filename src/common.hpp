@@ -4,8 +4,6 @@
 
 #include <sdkddkver.h>
 #include <windows.h>
-#include <d3d11.h>
-#include <wrl/client.h>
 
 #include <cinttypes>
 #include <cstddef>
@@ -60,17 +58,24 @@
 
 // clang-format on
 
+enum class eGameBranch
+{
+	Legacy,
+	Enhanced,
+
+	DontCare
+};
+
 namespace big
 {
 	using namespace std::chrono_literals;
-
-	template<typename T>
-	using comptr = Microsoft::WRL::ComPtr<T>;
 
 	inline HMODULE g_hmodule{};
 	inline HANDLE g_main_thread{};
 	inline DWORD g_main_thread_id{};
 	inline std::atomic_bool g_running{true};
+	inline std::atomic_bool g_is_enhanced{false};
+	inline uint32_t g_game_version{false};
 
 	namespace self
 	{

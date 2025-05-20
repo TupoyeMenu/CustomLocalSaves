@@ -2,6 +2,7 @@
 #include "function_types.hpp"
 #include "gta/enums.hpp"
 #include "gta/fwddec.hpp"
+#include "script/scrThread.hpp"
 
 #include <memory/handle.hpp>
 #include <player/CPlayerInfo.hpp>
@@ -23,16 +24,12 @@ namespace big
 		CNetworkPlayerMgr** m_network_player_mgr{};
 
 		rage::scrNativeRegistrationTable* m_native_registration_table{};
-		functions::get_native_handler_t m_get_native_handler{};
-		functions::fix_vectors_t m_fix_vectors{};
 
-		rage::atArray<GtaThread*>* m_script_threads{};
+		rage::atArray<rage::scrThread*>* m_script_threads{};
 		rage::scrProgramTable* m_script_program_table{};
 		functions::run_script_threads_t m_run_script_threads{};
 		std::int64_t** m_script_globals{};
 		PVOID m_init_native_tables{};
-
-		CGameScriptHandlerMgr** m_script_handler_mgr{};
 
 		memory::handle m_skip_money_check1;
 		memory::handle m_skip_money_check2;

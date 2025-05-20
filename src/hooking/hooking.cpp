@@ -13,26 +13,13 @@
 #include "pointers.hpp"
 #include "script_mgr.hpp"
 
-#ifdef ENABLE_GUI
-#include "renderer.hpp"
-#include "gui.hpp"
-#endif
-
 #include <MinHook.h>
 #include <fibersapi.h>
 
 namespace big
 {
 	hooking::hooking()
-#ifdef ENABLE_GUI
-		: m_swapchain_hook(*g_pointers->m_swapchain, hooks::swapchain_num_funcs)
-#endif
 	{
-#ifdef ENABLE_GUI
-		m_swapchain_hook.hook(hooks::swapchain_present_index, (void*)&hooks::swapchain_present);
-		m_swapchain_hook.hook(hooks::swapchain_resizebuffers_index, (void*)&hooks::swapchain_resizebuffers);
-#endif
-
 		// The only instances in that vector at this point should only be the "lazy" hooks
 		// aka the ones that still don't have their m_target assigned
 		for (auto& detour_hook_helper : m_detour_hook_helpers)
@@ -67,7 +54,6 @@ namespace big
 	void hooking::enable()
 	{
 #ifdef ENABLE_GUI
-		m_swapchain_hook.enable();
 		m_og_wndproc = reinterpret_cast<WNDPROC>(SetWindowLongPtrW(g_pointers->m_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&hooks::wndproc)));
 #endif
 
@@ -92,7 +78,6 @@ namespace big
 
 #ifdef ENABLE_GUI
 		SetWindowLongPtrW(g_pointers->m_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_og_wndproc));
-		m_swapchain_hook.disable();
 #endif
 
 		MH_ApplyQueued();

@@ -10,7 +10,6 @@
 
 #include "byte_patch_manager.hpp"
 
-#include "hooking/hooking.hpp"
 #include "memory/byte_patch.hpp"
 #include "pointers.hpp"
 #include "util/decrypt_save.hpp"

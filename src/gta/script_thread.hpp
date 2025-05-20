@@ -11,26 +11,53 @@
 #pragma once
 #include "fwddec.hpp"
 #include "joaat.hpp"
+#include "script/scrThreadContext.hpp"
 
 #include <cstdint>
 
 class CGameScriptHandlerNetComponent;
 
-class GtaThread : public rage::scrThread
+namespace rage_enhanced
 {
-public:
-	rage::joaat_t m_script_hash;               // 0x120
-	char m_padding3[0x14];                     // 0x124
-	std::int32_t m_instance_id;                // 0x138
-	char m_padding4[0x04];                     // 0x13C
-	uint8_t m_flag1;                      // 0x140
-	bool m_safe_for_network_game;              // 0x141
-	char m_padding5[0x02];                     // 0x142
-	bool m_is_minigame_script;                 // 0x144
-	char m_padding6[0x02];                     // 0x145
-	bool m_can_be_paused;                      // 0x147
-	bool m_can_remove_blips_from_other_scripts;// 0x148
-	char m_padding7[0x0F];                     // 0x149
-};
+	class scrThread
+	{
+	public:
+		class scrThreadContext
+		{
+		public:
+			std::uint32_t m_thread_id; // 0x00
+			std::uint64_t m_script_hash; // 0x08 TODO: is this still the script hash in enhanced? why is it an 8-byte value now?
+			rage::eThreadState m_state;          // 0x10
+			std::uint32_t m_instruction_pointer; // 0x14
+			std::uint32_t m_frame_pointer;       // 0x18
+			std::uint32_t m_stack_pointer;       // 0x1C
+			float m_timer_a;                     // 0x20
+			float m_timer_b;                     // 0x24
+			float m_wait_timer;                  // 0x28
+			char m_padding1[0x2C];               // 0x2C
+			std::uint32_t m_stack_size;          // 0x58
+			char m_Pad[0x54];                    // 0x2C don't really need this fields after this
+		};
+		static_assert(sizeof(scrThreadContext) == 0xB0);
 
-static_assert(sizeof(GtaThread) == 0x160);
+
+		virtual ~scrThread()                                                               = default;
+		virtual void Reset(std::uint64_t script_hash, void* args, std::uint32_t arg_count) = 0;
+		virtual rage::eThreadState RunImpl()                                               = 0;
+		virtual rage::eThreadState Run()                                                   = 0;
+		virtual void Kill()                                                                = 0;
+		virtual void GetInfo(void* info) = 0; // new in Enhanced, more research needed
+		                                      // I'm not sure what's going on with this func, best to not touch it
+
+		scrThreadContext m_context;  // 0x08
+		void* m_stack;               // 0xB8
+		char m_padding[0x4];         // 0xC0
+		std::uint32_t m_arg_size;    // 0xC4
+		std::uint32_t m_arg_loc;     // 0xC8
+		char m_padding2[0x4];        // 0xCC
+		char m_exit_message[128];    // 0xD0 finally works now (size 124, 4 padding)
+		std::uint32_t m_script_hash; // 0x150
+		char m_name[64];             // 0x154
+	};
+	static_assert(sizeof(scrThread) == 0x198);
+}

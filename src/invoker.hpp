@@ -9,6 +9,7 @@
  */
 
 #pragma once
+#include "crossmap.hpp"
 #include <script/scrNativeHandler.hpp>
 
 namespace big
@@ -30,6 +31,7 @@ namespace big
 		~native_invoker()         = default;
 
 		void cache_handlers();
+		rage::scrNativeHandler get_native_handler(rage::scrNativeHash hash);
 
 		void begin_call();
 		void end_call(rage::scrNativeHash hash);
@@ -53,7 +55,7 @@ namespace big
 
 	public:
 		native_call_context m_call_context;
-		std::unordered_map<rage::scrNativeHash, rage::scrNativeHandler> m_handler_cache;
+		static inline std::array<rage::scrNativeHandler, sizeof(g_crossmap) / sizeof(rage::scrNativePair)> m_handler_cache;
 		bool m_handlers_cached = false;
 	};
 

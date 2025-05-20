@@ -18,9 +18,6 @@ include(cmake/async-logger.cmake)
 include(cmake/json.cmake)
 
 message("\nFetching custom modules")
-if(ENABLE_GUI)
-    include(cmake/imgui.cmake)
-endif()
 include(cmake/gtav-classes.cmake)
 
 # BigBaseV2
