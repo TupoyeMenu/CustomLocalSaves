@@ -30,10 +30,12 @@ namespace big
 		detour_hook_helper::add<hooks::run_script_threads>("Script hook", (void*)g_pointers->m_run_script_threads);
 		detour_hook_helper::add<hooks::init_native_tables>("Init Native Tables", (void*)g_pointers->m_init_native_tables);
 
-		detour_hook_helper::add<hooks::network_can_access_multiplayer>("Network Can Access Multiplayer", (void*)g_pointers->m_network_can_access_multiplayer);
+		if(!g_is_enhanced)
+		{
+			detour_hook_helper::add<hooks::network_can_access_multiplayer>("Network Can Access Multiplayer", (void*)g_pointers->m_network_can_access_multiplayer);
+		}
 
-		detour_hook_helper::add<hooks::stat_ctor>("Stat Constructor", (void*)g_pointers->m_stat_ctor);
-		detour_hook_helper::add<hooks::stat_dtor>("Stat Destructor", (void*)g_pointers->m_stat_dtor);
+		detour_hook_helper::add<hooks::create_stat>("Create Stat", (void*)g_pointers->m_create_stat);
 		detour_hook_helper::add<hooks::mp_stats_save>("MP Stats Save", (void*)g_pointers->m_mp_stats_save);
 		detour_hook_helper::add<hooks::mp_save_download>("MP Save Download", (void*)g_pointers->m_mp_save_download);
 		detour_hook_helper::add<hooks::construct_basket>("Construct Basket", (void*)g_pointers->m_construct_basket);

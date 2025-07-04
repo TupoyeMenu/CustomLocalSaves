@@ -10,16 +10,11 @@
 
 namespace big
 {
-	bool hooks::stat_ctor(sStatData* _this, const char* name, void* p2)
+	// const char** name is actually a structure.
+	void hooks::create_stat(void* p1, const char** name)
 	{
-		bool ret = g_hooking->get_original<hooks::stat_ctor>()(_this, name, p2);
-		g_stats_service->register_stat(_this, name);
-		return ret;
-	}
-	bool hooks::stat_dtor(sStatData* _this, uint32_t p2)
-	{
-		g_stats_service->delete_stat(_this);
-		return g_hooking->get_original<hooks::stat_dtor>()(_this, p2);
+		g_hooking->get_original<hooks::create_stat>()(p1, name);
+		g_stats_service->register_stat(*name);
 	}
 
 	bool hooks::mp_stats_save(void* _this, uint32_t p2, uint32_t p3, uint32_t p4, uint32_t p5, uint32_t p6)
@@ -39,6 +34,9 @@ namespace big
 	bool tried_loading = false;
 	bool hooks::mp_save_download(CSavegameQueuedOperation_MPStats_Load* _this)
 	{
+		LOG(VERBOSE) << _this->m_download_state;
+		LOG(VERBOSE) << _this->m_download_status;
+		LOG(VERBOSE) << _this->m_http_error;
 		switch (_this->m_download_state)
 		{
 		case 1:
@@ -82,6 +80,11 @@ namespace big
 			{
 				// Allow profile stats to sync here. Reapplied at hooks::profile_stats_download
 				skip_profile_stats_patch::restore();
+				LOG(VERBOSE) << _this->m_save_buffer_size;
+				if(_this->m_save_buffer_size)
+				{
+					LOG(VERBOSE) << _this->m_save_buffer;
+				}
 			}
 
 			if (pso_loaded)

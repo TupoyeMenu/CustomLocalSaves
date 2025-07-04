@@ -7,6 +7,7 @@
 
 #include "common.hpp"
 #include "memory/all.hpp"
+#include "util/profile_stats.hpp"
 
 namespace big
 {
@@ -21,7 +22,7 @@ namespace big
 			m_game_state = ptr.add(2).rip().add(1).as<eGameState*>();
 		});
 
-		main_batch.add("Ped factory", "48 8B 05 ? ? ? ? 48 8B 48 08 48 85 C9 74 52 8B 81", [this](memory::handle ptr) {
+		main_batch.add("Ped factory", "48 8B 05 ? ? ? ? 48 8B 48 08 48 85 C9 74 52 8B 81", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_ped_factory = ptr.add(3).rip().as<CPedFactory**>();
 		});
 		main_batch.add("Ped factory", "C7 40 30 03 00 00 00 48 8B 0D", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
@@ -70,52 +71,97 @@ namespace big
 		// CLS signatures
 
 		main_batch.add("SkipMoneyCheck1", "84 C0 0F 85 93 01 00 00 48", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_skip_money_check1 = ptr.add(2);
+			m_skip_money_check1 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x48, 0xE9}).get();
+		});
+		main_batch.add("SkipMoneyCheck1", "84 C0 0F 84 ? ? ? ? 80 3D ? ? ? ? 00 0F 84 ? ? ? ? E8 ? ? ? ? 84 C0 0F 84", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_skip_money_check1 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90, 0x90, 0x90, 0x90, 0x90}).get();
 		});
 		main_batch.add("SkipMoneyCheck2", "84 C0 ? ? AD 01 00 00 48 8B 8D", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_skip_money_check2 = ptr.add(2);
+			m_skip_money_check2 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x48, 0xE9}).get();
+		});
+		main_batch.add("SkipMoneyCheck2", "84 C0 ? ? 31 F6 48 85 FF", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_skip_money_check2 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
 		});
 		main_batch.add("SkipMoneyCheck3", "84 C0 ? ? 83 C9 FF E8 ? ? ? ? 48 85", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_skip_money_check3 = ptr.add(2);
+			m_skip_money_check3 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
+			m_skip_money_check4 = memory::byte_patch::make(ptr.add(2).add(115).as<PVOID>(), std::vector{0x90, 0x90}).get();
+		});
+		main_batch.add("SkipMoneyCheck3", "84 C0 ? ? B9 FF FF FF FF E8 ? ? ? ? 48 85", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_skip_money_check3 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
+			m_skip_money_check4 = memory::byte_patch::make(ptr.add(2).add(241).as<PVOID>(), std::vector{0x90, 0x90}).get();
 		});
 		main_batch.add("SkipMoneyCheck5", "84 C0 ? ? 8B CB E8 ? ? ? ? 48 85 C0 7E", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_skip_money_check5 = ptr.add(2);
+			m_skip_money_check5 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
 		});
 		main_batch.add("SkipMoneyCheck6", "84 C0 ? ? 8B CF E8 ? ? ? ? 41", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_skip_money_check6 = ptr.add(2);
+			m_skip_money_check6 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
 		});
+		main_batch.add("SkipMoneyCheck6", "84 C0 ? ? 89 F1 E8 ? ? ? ? 48 89 C7", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_skip_money_check6 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
+		});
+
 		main_batch.add("AlwaysFileNotFound", "48 85 C0 74 52 40 88", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_file_not_found_check = ptr.add(35);
+			m_file_not_found_check = memory::byte_patch::make(ptr.add(35).as<PVOID>(), std::vector{0x90, 0x90}).get();
+		});
+		main_batch.add("AlwaysFileNotFound", "01 00 00 00 3D 98 01 00 00", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_file_not_found_check = memory::byte_patch::make(ptr.add(16).as<PVOID>(), std::vector{0x90, 0x90}).get();
+			m_file_not_found_check2 = memory::byte_patch::make(ptr.add(9).as<PVOID>(), std::vector{0x90, 0x90}).get();
 		});
 		main_batch.add("ProfileStatsSkip", "84 C0 ? ? ? ? ? ? 41 8A D4", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_profile_stats_skip = ptr.add(2);
+			skip_profile_stats_patch::m_skip = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x48, 0xE9}).get();
+		});
+		main_batch.add("ProfileStatsSkip", "84 C0 ? ? 48 8D 0D ? ? ? ? B2 01 E8 ? ? ? ? 84", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			skip_profile_stats_patch::m_skip = memory::byte_patch::make(ptr.add(2).as<uint8_t*>(), 0xEB).get();
 		});
 		main_batch.add("ProfileStats Read Request", "48 8D ? ? ? 4C 8B C6 41 8B CE E8", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_profile_stats_download = ptr.add(12).rip().as<PVOID>();
 		});
+		main_batch.add("ProfileStats Read Request", "48 8D 54 24 ? 31 C9 4D", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_profile_stats_download = ptr.add(11).rip().as<PVOID>();
+		});
 		main_batch.add("ProfileStats Write Request", "44 8B CF 8B D6 E8", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
+			m_profile_stats_save = ptr.add(6).rip().as<PVOID>();
+		});
+		main_batch.add("ProfileStats Write Request", "31 D2 41 89 E9 E8 ? ? ? ? 0F", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 			m_profile_stats_save = ptr.add(6).rip().as<PVOID>();
 		});
 		main_batch.add("Network Can Access Multiplayer", "E9 ? 01 00 00 33 D2 8B CB", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_network_can_access_multiplayer = ptr.add(10).rip().as<PVOID>();
 		});
 
-		main_batch.add("Stat Vtables", "74 6F 48 8B 16 4D 8B C6 48 8B C8 E8", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_stat_ctor                  = ptr.add(12).rip().as<PVOID>();
-			m_obf_uns64_stat_data_vtable = ptr.add(19).rip().as<PVOID>();
-			m_stat_dtor                  = *(PVOID*)m_obf_uns64_stat_data_vtable;
+		main_batch.add("Create Stat", "44 8A 45 70", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
+			m_create_stat = ptr.add(12).rip().as<PVOID>();
+		});
+		main_batch.add("Create Stat", "48 8B 4C 24 40 48 89 DA E8 ? ? ? ? 48", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_create_stat = ptr.add(9).rip().as<PVOID>();
 		});
 
 		main_batch.add("MP Stats Save", "48 83 EC 20 F6 81 ? ? ? ? ? 41 8B D9 45", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_mp_stats_save = ptr.sub(18).as<PVOID>();
 		});
+		main_batch.add("MP Stats Save", "48 83 EC 28 31 F6 41 83 F8 02", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_mp_stats_save = ptr.sub(12).as<PVOID>();
+		});
 		main_batch.add("MP Save Download", "85 C9 0F 84 1B 01 00 00 FF C9", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_mp_save_download_patch = ptr;
+			m_mp_save_download_patch = memory::byte_patch::make(ptr.add(0x1E3).as<PVOID>(), std::vector{0x90, 0x90}).get();
 			m_mp_save_download       = ptr.sub(26).as<PVOID>();
 			m_mp_save_download_error = ptr.add(323).rip().as<int*>();
 		});
+		main_batch.add("MP Save Download", "48 89 CE 8B 41 14 48 83 F8 03", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_mp_save_download_patch = memory::byte_patch::make(ptr.add(0x174).as<PVOID>(), std::vector{0x90, 0x90, 0x90, 0x90, 0x90, 0x90}).get();
+			m_mp_save_download       = ptr.sub(14).as<PVOID>();
+			m_mp_save_download_error = ptr.add(0x30).rip().as<int*>();
+		});
+		/*
+		main_batch.add("MP Save Download Error", "E8 ? ? ? ? C7 05 ? ? ? ? 01 00 00 00 8B 4E", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_mp_save_download_error = ptr.add(7).rip().as<int*>();
+		});
+		*/
 
 		main_batch.add("All Stats Array", "41 B0 01 48 8D 0D ? ? ? ? E8", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
+			m_stats = ptr.add(6).rip().add(8).as<rage::atArray<sStatArrayEntry>*>();
+		});
+		main_batch.add("All Stats Array", "45 31 C0 48 8D 3D ? ? ? ? 48 89", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 			m_stats = ptr.add(6).rip().add(8).as<rage::atArray<sStatArrayEntry>*>();
 		});
 
@@ -124,8 +170,17 @@ namespace big
 			main_batch.add("MP Save Decrypt", "84 D2 ? 34 48 8D 8C", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 				m_mp_save_decrypt = ptr;
 			});
+			main_batch.add("MP Save Decrypt", "44 8B 46 30 48 8B 56 18 48 89 F9", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+				m_mp_save_decrypt = ptr;
+			});
+			main_batch.add("MP Save Encrypt", "44 8B 46 30 48 8B 56 18 48 89 D9", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+				// Unused
+			});
 			main_batch.add("Load Check Profile Stat", "A8 01 ? ? ? ? ? ? 40 F6 C5", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 				m_load_check_profile_stat = ptr.add(2);
+			});
+			main_batch.add("Load Check Profile Stat", "F6 06 80 ? ? ? ? ? ? 4C 89 7C", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+				m_load_check_profile_stat = ptr.add(3);
 			});
 		}
 
@@ -133,11 +188,14 @@ namespace big
 		main_batch.add("Construct Basket", "48 83 C1 70 45 8B E1 41 8B", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_construct_basket = ptr.sub(32).as<PVOID>();
 		});
+		main_batch.add("Construct Basket", "48 83 EC 20 45 89 CF 44 89 C5", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_construct_basket = ptr.sub(10).as<PVOID>();
+		});
 
 		main_batch.run(memory::module(nullptr));
 
 		LPCWSTR lpClassName = g_is_enhanced ? L"sgaWindow" : L"grcWindow";
-		m_hwnd = FindWindowW(lpClassName, nullptr);
+		m_hwnd              = FindWindowW(lpClassName, nullptr);
 		if (!m_hwnd)
 			throw std::runtime_error("Failed to find the game's window.");
 

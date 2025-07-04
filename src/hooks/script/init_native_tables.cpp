@@ -16,7 +16,15 @@ namespace big
 	bool hooks::init_native_tables(rage::scrProgram* program)
 	{
 		bool ret = g_hooking->get_original<hooks::init_native_tables>()(program);
-		g_native_hooks->hook_program(program);
+		if(program->m_code_blocks && program->m_code_size)
+		{
+			LOG(VERBOSE) << program << " " << program->m_name;
+			g_native_hooks->hook_program(program);
+		}
+		else
+		{
+			LOG(VERBOSE) << program;
+		}
 
 		return ret;
 	}

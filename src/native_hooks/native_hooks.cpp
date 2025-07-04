@@ -123,6 +123,10 @@ namespace big
 
 		add_native_detour(0xF70EFA14FE091429, all_scripts::WITHDRAW_VC);
 		add_native_detour(0xE260E0BB9CD995AC, all_scripts::DEPOSIT_VC);
+		if(g_is_enhanced)
+		{
+			add_native_detour(0xA921DED15FDF28F5, all_scripts::NETWORK_CLEAR_CHARACTER_WALLET);
+		}
 
 		if(g.no_rgs)
 		{

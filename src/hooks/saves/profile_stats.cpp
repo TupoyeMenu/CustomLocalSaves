@@ -12,6 +12,7 @@ namespace big
 	}
 	bool hooks::profile_stats_save(void* p0, void* p1, uint32_t* p2, uint32_t p3)
 	{
+		LOG(VERBOSE) << "Profile stat save attempted.";
 		*p2 = 3;
 		return true;
 	}
