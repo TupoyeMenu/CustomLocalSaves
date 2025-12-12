@@ -81,8 +81,8 @@ namespace big
 			m_profile_stats_save = ptr.add(6).rip().as<PVOID>();
 		});
 
-		main_batch.add("Network Can Access Multiplayer", "E9 ? 01 00 00 33 D2 8B CB", [this](memory::handle ptr) {
-			m_network_can_access_multiplayer = ptr.add(10).rip().as<PVOID>();
+		main_batch.add("Network Can Access Multiplayer", "74 E0 33 D2 8B CB", [this](memory::handle ptr) {
+			m_network_can_access_multiplayer = ptr.add(7).rip().as<PVOID>();
 		});
 
 		main_batch.add("Stat Vtables", "74 6F 48 8B 16 4D 8B C6 48 8B C8 E8", [this](memory::handle ptr) {
