@@ -165,12 +165,12 @@ namespace big
 			main_batch.add("MP Save Decrypt", "84 D2 ? 34 48 8D 8C", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 				m_mp_save_decrypt = ptr;
 			});
-			main_batch.add("MP Save Decrypt", "44 8B 46 30 48 8B 56 18 48 89 F9", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			main_batch.add("MP Save Decrypt", "84 ? ? ? 48 8D 7C 24 ? 48 89 F9 BA", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 				m_mp_save_decrypt = ptr;
 			});
-			main_batch.add("MP Save Encrypt", "44 8B 46 30 48 8B 56 18 48 89 D9", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
-				// Unused
-			});
+			//main_batch.add("MP Save Encrypt", "44 8B 46 ? 48 8B 56 18 48 89 D9", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			//	// Unused
+			//});
 			main_batch.add("Load Check Profile Stat", "A8 01 ? ? ? ? ? ? 40 F6 C5", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 				m_load_check_profile_stat = ptr.add(2);
 			});
