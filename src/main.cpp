@@ -8,21 +8,17 @@
 #include "common.hpp"
 #include "fiber_pool.hpp"
 #include "file_manager.hpp"
-#include "gta/joaat.hpp"
 #include "hooking/hooking.hpp"
 #include "native_hooks/native_hooks.hpp"
 #include "pointers.hpp"
 #include "script_mgr.hpp"
 #include "thread_pool.hpp"
+#include "util/is_enhanced.hpp"
 
 #include "services/stats/stats_service.hpp"
 
 #ifdef ENABLE_EXCEPTION_HANDLER
-#include "logger/exception_handler.hpp"
-#endif
-#ifdef ENABLE_GUI
-#include "gui.hpp"
-#include "renderer.hpp"
+	#include "logger/exception_handler.hpp"
 #endif
 
 #include <rage/gameSkeleton.hpp>
@@ -35,6 +31,8 @@ BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
 	{
 		DisableThreadLibraryCalls(hmod);
 
+		g_is_enhanced = big::is_enhanced();
+
 		g_hmodule     = hmod;
 		g_main_thread = CreateThread(
 		    nullptr,
@@ -45,19 +43,20 @@ BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
 #endif
 			    std::srand(std::chrono::system_clock::now().time_since_epoch().count());
 
-			    while (!FindWindow("grcWindow", "Grand Theft Auto V"))
+			    LPCSTR lpClassName = g_is_enhanced ? "sgaWindow" : "grcWindow";
+			    while (!FindWindow(lpClassName, nullptr))
 				    std::this_thread::sleep_for(1s);
 
 			    std::filesystem::path base_dir = std::getenv("appdata");
 			    base_dir /= PROJECT_NAME;
 			    g_file_manager.init(base_dir);
-			    g_log.initialize(
-					PROJECT_NAME,
-					g_file_manager.get_project_file("./cout.log")
+			    g_log.initialize(PROJECT_NAME,
+			        g_file_manager.get_project_file("./cout.log")
 #ifndef ENABLE_GUI
-					,false // Disable log window when GUI is disabled.
+			            ,
+			        false // Disable log window when GUI is disabled.
 #endif
-				);
+			    );
 			    try
 			    {
 				    auto thread_pool_instance = std::make_unique<thread_pool>();
@@ -72,12 +71,6 @@ BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
 				    auto byte_patch_manager_instance = std::make_unique<byte_patch_manager>();
 				    LOG(INFO) << "Byte Patch Manager initialized.";
 
-#ifdef ENABLE_GUI
-				    auto renderer_instance = std::make_unique<renderer>();
-				    LOG(INFO) << "Renderer initialized.";
-				    auto gui_instance = std::make_unique<gui>();
-#endif
-
 				    auto fiber_pool_instance = std::make_unique<fiber_pool>(10);
 				    LOG(INFO) << "Fiber pool initialized.";
 
@@ -87,9 +80,6 @@ BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
 				    auto stats_service_instance          = std::make_unique<stats_service>();
 
 				    g_script_mgr.add_script(std::make_unique<script>(&backend::loop));
-#ifdef ENABLE_GUI
-				    g_script_mgr.add_script(std::make_unique<script>(&gui::script_func));
-#endif
 				    LOG(INFO) << "Scripts registered.";
 
 				    g_hooking->enable();
@@ -125,11 +115,6 @@ BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
 
 				    fiber_pool_instance.reset();
 				    LOG(INFO) << "Fiber pool uninitialized.";
-
-#ifdef ENABLE_GUI
-				    renderer_instance.reset();
-				    LOG(INFO) << "Renderer uninitialized.";
-#endif
 
 				    byte_patch_manager_instance.reset();
 				    LOG(INFO) << "Byte Patch Manager uninitialized.";

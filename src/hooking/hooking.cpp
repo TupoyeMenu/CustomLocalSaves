@@ -13,26 +13,13 @@
 #include "pointers.hpp"
 #include "script_mgr.hpp"
 
-#ifdef ENABLE_GUI
-#include "renderer.hpp"
-#include "gui.hpp"
-#endif
-
 #include <MinHook.h>
 #include <fibersapi.h>
 
 namespace big
 {
 	hooking::hooking()
-#ifdef ENABLE_GUI
-		: m_swapchain_hook(*g_pointers->m_swapchain, hooks::swapchain_num_funcs)
-#endif
 	{
-#ifdef ENABLE_GUI
-		m_swapchain_hook.hook(hooks::swapchain_present_index, (void*)&hooks::swapchain_present);
-		m_swapchain_hook.hook(hooks::swapchain_resizebuffers_index, (void*)&hooks::swapchain_resizebuffers);
-#endif
-
 		// The only instances in that vector at this point should only be the "lazy" hooks
 		// aka the ones that still don't have their m_target assigned
 		for (auto& detour_hook_helper : m_detour_hook_helpers)
@@ -43,10 +30,12 @@ namespace big
 		detour_hook_helper::add<hooks::run_script_threads>("Script hook", (void*)g_pointers->m_run_script_threads);
 		detour_hook_helper::add<hooks::init_native_tables>("Init Native Tables", (void*)g_pointers->m_init_native_tables);
 
-		detour_hook_helper::add<hooks::network_can_access_multiplayer>("Network Can Access Multiplayer", (void*)g_pointers->m_network_can_access_multiplayer);
+		if(!g_is_enhanced)
+		{
+			detour_hook_helper::add<hooks::network_can_access_multiplayer>("Network Can Access Multiplayer", (void*)g_pointers->m_network_can_access_multiplayer);
+		}
 
-		detour_hook_helper::add<hooks::stat_ctor>("Stat Constructor", (void*)g_pointers->m_stat_ctor);
-		detour_hook_helper::add<hooks::stat_dtor>("Stat Destructor", (void*)g_pointers->m_stat_dtor);
+		detour_hook_helper::add<hooks::create_stat>("Create Stat", (void*)g_pointers->m_create_stat);
 		detour_hook_helper::add<hooks::mp_stats_save>("MP Stats Save", (void*)g_pointers->m_mp_stats_save);
 		detour_hook_helper::add<hooks::mp_save_download>("MP Save Download", (void*)g_pointers->m_mp_save_download);
 		detour_hook_helper::add<hooks::construct_basket>("Construct Basket", (void*)g_pointers->m_construct_basket);
@@ -67,7 +56,6 @@ namespace big
 	void hooking::enable()
 	{
 #ifdef ENABLE_GUI
-		m_swapchain_hook.enable();
 		m_og_wndproc = reinterpret_cast<WNDPROC>(SetWindowLongPtrW(g_pointers->m_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&hooks::wndproc)));
 #endif
 
@@ -92,7 +80,6 @@ namespace big
 
 #ifdef ENABLE_GUI
 		SetWindowLongPtrW(g_pointers->m_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_og_wndproc));
-		m_swapchain_hook.disable();
 #endif
 
 		MH_ApplyQueued();

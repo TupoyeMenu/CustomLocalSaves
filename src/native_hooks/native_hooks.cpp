@@ -15,6 +15,7 @@
 #include "fm_maintain_cloud_header_data.hpp"
 #include "crossmap.hpp"
 #include "gta_util.hpp"
+#include "invoker.hpp"
 
 #include <script/scrProgram.hpp>
 #include <script/scrProgramTable.hpp>
@@ -72,7 +73,7 @@ namespace big
 			auto native = replacement_hash;
 			map_native(&native);
 
-			auto og_handler = g_pointers->m_get_native_handler(g_pointers->m_native_registration_table, native);
+			auto og_handler = g_native_invoker.get_native_handler(native);
 			if (!og_handler)
 				continue;
 
@@ -122,6 +123,10 @@ namespace big
 
 		add_native_detour(0xF70EFA14FE091429, all_scripts::WITHDRAW_VC);
 		add_native_detour(0xE260E0BB9CD995AC, all_scripts::DEPOSIT_VC);
+		if(g_is_enhanced)
+		{
+			add_native_detour(0xA921DED15FDF28F5, all_scripts::NETWORK_CLEAR_CHARACTER_WALLET);
+		}
 
 		if(g.no_rgs)
 		{

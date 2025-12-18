@@ -21,8 +21,7 @@ namespace big
 		void save_stats();
 		bool load_stats();
 
-		void register_stat(sStatData* data, const char* name);
-		void delete_stat(sStatData* data);
+		void register_stat(const char* name);
 
 		sStatData* get_stat_by_hash(Hash stat);
 

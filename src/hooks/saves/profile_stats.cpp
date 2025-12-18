@@ -3,7 +3,6 @@
 
 namespace big
 {
-	bool allow_profile_stats = false;
 	bool hooks::profile_stats_download(int p0, void* p1, void* p2)
 	{
 		LOG(VERBOSE) << "Profile stat load attempted.";

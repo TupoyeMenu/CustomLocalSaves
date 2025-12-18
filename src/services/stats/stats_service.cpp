@@ -28,15 +28,12 @@ namespace big
 		g_stats_service = nullptr;
 	}
 
-	void stats_service::register_stat(sStatData* data, const char* name)
+	void stats_service::register_stat(const char* name)
 	{
 		if (g.use_human_readable_stat_names)
 		{
 			m_stat_hash_to_string[rage::joaat(name)] = name;
 		}
-	}
-	void stats_service::delete_stat(sStatData* data)
-	{
 	}
 
 	sStatData* stats_service::get_stat_by_hash(Hash stat_to_find)

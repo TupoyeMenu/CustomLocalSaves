@@ -40,8 +40,9 @@ namespace big
 		bool use_human_readable_stat_names = false;
 		bool load_fsl_files = false;
 		bool no_rgs = false;
+		bool enable_debug_logs = false;
 
-		NLOHMANN_DEFINE_TYPE_INTRUSIVE(menu_settings, save_unmodified_stats, use_human_readable_stat_names, load_fsl_files, no_rgs)
+		NLOHMANN_DEFINE_TYPE_INTRUSIVE(menu_settings, save_unmodified_stats, use_human_readable_stat_names, load_fsl_files, no_rgs, enable_debug_logs)
 	};
 
 	inline auto g = menu_settings();

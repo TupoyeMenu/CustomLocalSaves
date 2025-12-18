@@ -88,7 +88,7 @@ public:
 	uint32_t m_unk1;
 	char m_pad2[4];
 	uint32_t m_download_status; // Probably a sub class
-	uint32_t m_http_error;
+	int32_t m_http_error;
 	char m_pad3[8];
 	char* m_save_buffer; // Also a sub class
 	char m_pad4[4];

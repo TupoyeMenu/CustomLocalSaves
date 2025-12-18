@@ -83,6 +83,14 @@ namespace big
 			src->set_return_value<BOOL>(TRUE);
 		}
 
+		// Alternative to g_pointers->m_skip_money_check5
+		inline void NETWORK_CLEAR_CHARACTER_WALLET(rage::scrNativeCallContext* src)
+		{
+			int char_slot = src->get_arg<int>(0);
+			sStatData* WALLET_BALANCE = g_stats_service->get_stat_by_hash(rage::joaat(std::format("MP{}_WALLET_BALANCE", char_slot)));
+			WALLET_BALANCE->SetInt64Data(0);
+		}
+
 		void RETURN_TRUE(rage::scrNativeCallContext* src)
 		{
 			src->set_return_value<BOOL>(TRUE);
