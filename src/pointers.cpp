@@ -122,8 +122,8 @@ namespace big
 		main_batch.add("ProfileStats Write Request", "44 8B CF 8B D6 E8", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_profile_stats_save = ptr.add(6).rip().as<PVOID>();
 		});
-		main_batch.add("ProfileStats Write Request", "31 D2 41 89 E9 E8 ? ? ? ? 0F", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
-			m_profile_stats_save = ptr.add(6).rip().as<PVOID>();
+		main_batch.add("ProfileStats Write Request", "10 ? 89 ? 31 D2 41 89 ? E8", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_profile_stats_save = ptr.add(10).rip().as<PVOID>();
 		});
 		main_batch.add("Network Can Access Multiplayer", "74 E0 33 D2 8B CB", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_network_can_access_multiplayer = ptr.add(7).rip().as<PVOID>();
@@ -152,11 +152,6 @@ namespace big
 			m_mp_save_download       = ptr.sub(14).as<PVOID>();
 			m_mp_save_download_error = ptr.add(0x30).rip().as<int*>();
 		});
-		/*
-		main_batch.add("MP Save Download Error", "E8 ? ? ? ? C7 05 ? ? ? ? 01 00 00 00 8B 4E", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
-			m_mp_save_download_error = ptr.add(7).rip().as<int*>();
-		});
-		*/
 
 		main_batch.add("All Stats Array", "41 B0 01 48 8D 0D ? ? ? ? E8", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_stats = ptr.add(6).rip().add(8).as<rage::atArray<sStatArrayEntry>*>();
