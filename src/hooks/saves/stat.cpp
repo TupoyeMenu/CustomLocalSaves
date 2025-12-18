@@ -50,10 +50,11 @@ namespace big
 			tried_loading = true;
 			json_loaded   = g_stats_service->load_stats();
 
-			if (json_loaded || !g.load_fsl_files)
+			if (json_loaded && !g.load_fsl_files)
 			{
 				// Make sure cloud load fails since we already have the stats.
 				_this->m_download_status = 2;
+				LOGF(VERBOSE, "Loaded JSON file for char slot {}", _this->m_char_slot);
 				break;
 			}
 
