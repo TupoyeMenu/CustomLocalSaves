@@ -34,9 +34,12 @@ namespace big
 	bool tried_loading = false;
 	bool hooks::mp_save_download(CSavegameQueuedOperation_MPStats_Load* _this)
 	{
-		LOG(VERBOSE) << _this->m_download_state;
-		LOG(VERBOSE) << _this->m_download_status;
-		LOG(VERBOSE) << _this->m_http_error;
+		if (g.enable_debug_logs)
+		{
+			LOG(VERBOSE) << "m_download_state: " << _this->m_download_state;
+			LOG(VERBOSE) << "m_download_status: " << _this->m_download_status;
+			LOG(VERBOSE) << "m_http_error: " << _this->m_http_error;
+		}
 		switch (_this->m_download_state)
 		{
 		case 1:
@@ -80,10 +83,13 @@ namespace big
 			{
 				// Allow profile stats to sync here. Reapplied at hooks::profile_stats_download
 				skip_profile_stats_patch::restore();
-				LOG(VERBOSE) << _this->m_save_buffer_size;
-				if(_this->m_save_buffer_size)
+				if (g.enable_debug_logs)
 				{
-					LOG(VERBOSE) << _this->m_save_buffer;
+					LOG(VERBOSE) << "m_save_buffer_size: " << _this->m_save_buffer_size;
+					if(_this->m_save_buffer_size)
+					{
+						LOG(VERBOSE) << "m_save_buffer: " << _this->m_save_buffer;
+					}
 				}
 			}
 
