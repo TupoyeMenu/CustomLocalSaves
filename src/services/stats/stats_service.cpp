@@ -15,6 +15,7 @@ namespace big
 		m_save_file_default = g_file_manager.get_project_file("./save_default0000.json");
 		m_save_file_char1   = g_file_manager.get_project_file("./save_char0001.json");
 		m_save_file_char2   = g_file_manager.get_project_file("./save_char0002.json");
+		m_save_file_script  = g_file_manager.get_project_file("./save_script.json");
 		m_save_overwrite    = g_file_manager.get_project_file("./save_overwrite.json");
 		if (g.load_fsl_files)
 		{
@@ -190,6 +191,14 @@ namespace big
 
 		file << json.dump(1, '	');
 		file.close();
+
+		if (char_index > 0)
+		{
+			std::ofstream script_save(m_save_file_script.get_path(), std::ios::out | std::ios::trunc);
+
+			script_save << m_script_save_data.dump(1, '	');
+			script_save.close();
+		}
 	}
 
 	bool stats_service::load_internal_stats_from_json(uint8_t char_index)

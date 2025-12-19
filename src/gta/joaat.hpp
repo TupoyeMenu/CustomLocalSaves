@@ -45,6 +45,22 @@ namespace rage
 		return hash;
 	}
 	static_assert(consteval_joaat("test") == 0x3f75ccc1);
+
+
+	inline constexpr joaat_t literal_joaat(const std::string_view str)
+	{
+		joaat_t hash = 0;
+		for (auto c : str)
+		{
+			hash += c;
+			hash += (hash << 10);
+			hash ^= (hash >> 6);
+		}
+		hash += (hash << 3);
+		hash ^= (hash >> 11);
+		hash += (hash << 15);
+		return hash;
+	}
 }
 
 #define RAGE_JOAAT_IMPL(str) (::rage::consteval_joaat(str))

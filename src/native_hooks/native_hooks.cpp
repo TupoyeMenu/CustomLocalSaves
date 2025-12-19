@@ -12,10 +12,9 @@
 #include "native_hooks.hpp"
 
 #include "all_scripts.hpp"
-#include "fm_maintain_cloud_header_data.hpp"
 #include "crossmap.hpp"
-#include "gta_util.hpp"
-#include "invoker.hpp"
+#include "fm_maintain_cloud_header_data.hpp"
+#include "script_save.hpp"
 
 #include <script/scrProgram.hpp>
 #include <script/scrProgramTable.hpp>
@@ -128,7 +127,24 @@ namespace big
 			add_native_detour(0xA921DED15FDF28F5, all_scripts::NETWORK_CLEAR_CHARACTER_WALLET);
 		}
 
-		if(g.no_rgs)
+		add_native_detour(0x34C9EE5986258415, all_scripts::REGISTER_INT_TO_SAVE);        // REGISTER_INT_TO_SAVE
+		add_native_detour(0xA735353C77334EA0, all_scripts::REGISTER_INT64_TO_SAVE);      // REGISTER_INT64_TO_SAVE
+		add_native_detour(0x10C2FA78D0E128A1, all_scripts::REGISTER_ENUM_TO_SAVE);       // REGISTER_ENUM_TO_SAVE
+		add_native_detour(0x7CAEC29ECB5DFEBB, all_scripts::REGISTER_FLOAT_TO_SAVE);      // REGISTER_FLOAT_TO_SAVE
+		add_native_detour(0xC8F4131414C835A1, all_scripts::REGISTER_BOOL_TO_SAVE);       // REGISTER_BOOL_TO_SAVE
+		add_native_detour(0xEDB1232C5BEAE62F, all_scripts::REGISTER_TEXT_LABEL_TO_SAVE); // REGISTER_TEXT_LABEL_TO_SAVE
+		add_native_detour(0x6F7794F28C6B2535, all_scripts::REGISTER_TEXT_LABEL_15_TO_SAVE); // REGISTER_TEXT_LABEL_15_TO_SAVE
+		add_native_detour(0x48F069265A0E4BEC, all_scripts::REGISTER_TEXT_LABEL_23_TO_SAVE); // REGISTER_TEXT_LABEL_23_TO_SAVE
+		add_native_detour(0x8269816F6CFD40F8, all_scripts::REGISTER_TEXT_LABEL_31_TO_SAVE); // REGISTER_TEXT_LABEL_31_TO_SAVE
+		add_native_detour(0xFAA457EF263E8763, all_scripts::REGISTER_TEXT_LABEL_63_TO_SAVE); // REGISTER_TEXT_LABEL_63_TO_SAVE
+		add_native_detour(0xA9575F812C6A7997, all_scripts::LOG_SAVE_START);                 // START_SAVE_DATA
+		add_native_detour(0x74E20C9145FB66FD, all_scripts::LOG_SAVE_END);                   // STOP_SAVE_DATA
+		add_native_detour(0xBF737600CDDBEADD, all_scripts::LOG_SAVE_START_STRUCT); // START_SAVE_STRUCT_WITH_SIZE
+		add_native_detour(0xEB1774DF12BB9F12, all_scripts::LOG_SAVE_END_STRUCT);   // STOP_SAVE_STRUCT
+		add_native_detour(0x60FE567DF1B1AF9D, all_scripts::LOG_SAVE_START_ARRAY);  // START_SAVE_ARRAY_WITH_SIZE
+		add_native_detour(0x04456F95153C6BE4, all_scripts::LOG_SAVE_END_ARRAY);    // STOP_SAVE_ARRAY
+
+		if (g.no_rgs)
 		{
 			add_native_detour(0xC87E740D9F3872CC, fm_maintain_cloud_header_data::UGC_WAS_QUERY_FORCE_CANCELLED);
 		}

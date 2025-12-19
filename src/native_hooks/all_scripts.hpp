@@ -9,12 +9,7 @@
  */
 
 #pragma once
-#include "fiber_pool.hpp"
-#include "gta/enums.hpp"
 #include "gta/stat.hpp"
-#include "hooking/hooking.hpp"
-#include "native_hooks.hpp"
-#include "natives.hpp"
 #include "services/stats/stats_service.hpp"
 #include "util/scripts.hpp"
 
