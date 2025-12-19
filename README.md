@@ -1,5 +1,5 @@
 # CustomLocalSaves
-A mod for Grand Theft Auto V Legacy that gives you control over your online saves.
+A mod for Grand Theft Auto V Legacy and Enhanced that gives you control over your online saves.
 Strictly for educational purposes.
 
 ## Features
