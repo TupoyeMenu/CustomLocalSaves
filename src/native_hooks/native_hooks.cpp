@@ -134,6 +134,9 @@ namespace big
 		}
 		add_native_detour(0x0395CB47B022E62C, all_scripts::NET_GAMESERVER_RETRIEVE_INIT_SESSION_STATUS);
 
+		add_native_detour(0x158C16F5E4CF41F8, all_scripts::RETURN_TRUE); // NETWORK_CASINO_CAN_BET
+		add_native_detour(0x930DE22F07B1CCE3, all_scripts::RETURN_FALSE); // SC_PROFANITY_GET_STRING_STATUS
+
 		for (auto& entry : *g_pointers->m_script_program_table)
 			if (entry.m_program)
 				hook_program(entry.m_program);
