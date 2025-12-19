@@ -91,6 +91,8 @@ namespace big
 		size_t get_pso_file_size(uint8_t char_index);
 		void read_pso_file(uint8_t char_index, char* buf, size_t size);
 
+		void save_script_data();
+
 
 		nlohmann::json& get_script_save_data()
 		{

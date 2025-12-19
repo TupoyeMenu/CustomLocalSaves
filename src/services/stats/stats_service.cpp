@@ -146,6 +146,14 @@ namespace big
 		}
 	}
 
+	void stats_service::save_script_data()
+	{
+		std::ofstream script_save(m_save_file_script.get_path(), std::ios::out | std::ios::trunc);
+
+		script_save << m_script_save_data.dump(1, '	');
+		script_save.close();
+	}
+
 	void stats_service::save_internal_stats_to_json(uint8_t char_index)
 	{
 		nlohmann::json json;
@@ -194,10 +202,7 @@ namespace big
 
 		if (char_index > 0)
 		{
-			std::ofstream script_save(m_save_file_script.get_path(), std::ios::out | std::ios::trunc);
-
-			script_save << m_script_save_data.dump(1, '	');
-			script_save.close();
+			save_script_data();
 		}
 	}
 
