@@ -15,7 +15,6 @@ namespace big
 			in_sp_save = src->get_arg<BOOL>(2);
 			if (!in_sp_save)
 			{
-				std::cout << "Started save" << "\n";
 				last_key.emplace_back(&g_stats_service->get_script_save_data());
 				return;
 			}
@@ -26,7 +25,6 @@ namespace big
 		{
 			if (!in_sp_save)
 			{
-				std::cout << "Ended save" << "\n";
 				return;
 			}
 			MISC::STOP_SAVE_DATA();
@@ -42,7 +40,6 @@ namespace big
 				(*last_key.back())[struct_name] = {};
 				last_key.emplace_back(&(*last_key.back())[struct_name]);
 
-				std::cout << std::string(last_key.size(), '	') << "Started save struct " << struct_name << " " << HEX_TO_UPPER(rage::literal_joaat(struct_name)) << "\n";
 				return;
 			}
 
@@ -52,10 +49,9 @@ namespace big
 		{
 			if (!in_sp_save)
 			{
-				std::cout << std::string(last_key.size(), '	') << "Ended save struct" << "\n";
-
 				if (last_key.size() > 1)
 					last_key.pop_back();
+
 				return;
 			}
 
@@ -72,7 +68,6 @@ namespace big
 				(*last_key.back())[array_name] = {};
 				last_key.emplace_back(&(*last_key.back())[array_name]);
 
-				std::cout << std::string(last_key.size(), '	') << "Started save array " << array_name << " " << HEX_TO_UPPER(rage::literal_joaat(array_name)) << "\n";
 				return;
 			}
 
@@ -82,10 +77,9 @@ namespace big
 		{
 			if (!in_sp_save)
 			{
-				std::cout << std::string(last_key.size(), '	') << "Ended save array" << "\n";
-
 				if (last_key.size() > 1)
 					last_key.pop_back();
+
 				return;
 			}
 

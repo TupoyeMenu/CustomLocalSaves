@@ -206,7 +206,8 @@ namespace big
 
 	static void update_script_var_from_json(script_save_var& save_var, const stats_service::script_json& json)
 	{
-		switch (json[1].template get<eScriptSaveType>())
+		eScriptSaveType type = json[1].template get<eScriptSaveType>();
+		switch (type)
 		{
 		case eScriptSaveType::INT:
 		{
@@ -236,26 +237,27 @@ namespace big
 		case eScriptSaveType::TEXT_LABEL_15_:
 		{
 			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 15);
-			LOG(VERBOSE) << "Applied text to " << save_var.data_ptr << " (Text: " << json[0].template get<std::string>() << ")";
 			break;
 		}
 		case eScriptSaveType::TEXT_LABEL_23_:
 		{
 			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 23);
-			LOG(VERBOSE) << "Applied text to " << save_var.data_ptr << " (Text: " << json[0].template get<std::string>() << ")";
 			break;
 		}
 		case eScriptSaveType::TEXT_LABEL_31_:
 		{
 			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 31);
-			LOG(VERBOSE) << "Applied text to " << save_var.data_ptr << " (Text: " << json[0].template get<std::string>() << ")";
 			break;
 		}
 		case eScriptSaveType::TEXT_LABEL_:
 		case eScriptSaveType::TEXT_LABEL_63_:
 		{
 			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 63);
-			LOG(VERBOSE) << "Applied text to " << save_var.data_ptr << " (Text: " << json[0].template get<std::string>() << ")";
+			break;
+		}
+		default:
+		{
+			LOG(WARNING) << "Unknown stat type: " << (int)type << " In script data";
 			break;
 		}
 		}
@@ -263,7 +265,6 @@ namespace big
 
 	void stats_service::load_script_data_from_json(const nlohmann::json& json)
 	{
-		LOG(VERBOSE) << "Loading script save data";
 		m_script_save_data.visit(
 			[&](const script_json::json_pointer& p,
 				script_json& j)
@@ -271,10 +272,6 @@ namespace big
 			if (j.is_array() && j.save_var.data_ptr != 0)
 			{
 				update_script_var_from_json(j.save_var, json[p]);
-				if (!j[0].is_number() || j[0].get<int>() != 0)
-				{
-					LOG(VERBOSE) << json[p].dump();
-				}
 			}
 		});
 	}
@@ -420,6 +417,8 @@ namespace big
 		try
 		{
 			std::ifstream file(m_save_file_script.get_path());
+			LOG(VERBOSE) << "Loading save_script.json";
+
 			const nlohmann::json& json = nlohmann::json::parse(file);
 			load_script_data_from_json(json);
 
@@ -427,7 +426,7 @@ namespace big
 		}
 		catch (const std::exception& ex)
 		{
-			LOG(WARNING) << "Detected corrupt save file: " << ex.what();
+			LOG(WARNING) << "Detected corrupt script save file: " << ex.what();
 		}
 
 		return false;
@@ -520,7 +519,7 @@ namespace big
 			case eStatType::PROFILE_SETTING: break;
 			default:
 			{
-				LOG(VERBOSE) << "Unknown stat type: " << (int)stat.m_stat->GetTypeId() << "In stat: " << stat.m_hash;
+				LOG(WARNING) << "Unknown stat type: " << (int)stat.m_stat->GetTypeId() << "In stat: " << stat.m_hash;
 				break;
 			}
 			}
