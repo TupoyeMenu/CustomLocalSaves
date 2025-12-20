@@ -9,12 +9,53 @@
 
 namespace big
 {
+
+	template<class Fnc>
+	void script_save_json_metadata::visit(const Fnc& fnc)
+	{
+		do_visit(stats_service::script_json::json_pointer{}, fnc);
+	}
+
+	template<class Ptr, class Fnc>
+	void script_save_json_metadata::do_visit(const Ptr& ptr, const Fnc& fnc)
+	{
+		using value_t                 = nlohmann::detail::value_t;
+		stats_service::script_json& j = *static_cast<stats_service::script_json*>(this);
+		switch (j.type())
+		{
+		case value_t::object:
+			fnc(ptr, j);
+			for (const auto& entry : j.items())
+			{
+				entry.value().do_visit(ptr / entry.key(), fnc);
+			}
+			break;
+		case value_t::array:
+			fnc(ptr, j);
+			for (std::size_t i = 0; i < j.size(); ++i)
+			{
+				j.at(i).do_visit(ptr / std::to_string(i), fnc);
+			}
+			break;
+		case value_t::null:
+		case value_t::string:
+		case value_t::boolean:
+		case value_t::number_integer:
+		case value_t::number_unsigned:
+		case value_t::number_float:
+		case value_t::binary: fnc(ptr, j); break;
+		case value_t::discarded:
+		default: break;
+		}
+	}
+
 	stats_service::stats_service()
 	{
 		g_stats_service     = this;
 		m_save_file_default = g_file_manager.get_project_file("./save_default0000.json");
 		m_save_file_char1   = g_file_manager.get_project_file("./save_char0001.json");
 		m_save_file_char2   = g_file_manager.get_project_file("./save_char0002.json");
+		m_save_file_script  = g_file_manager.get_project_file("./save_script.json");
 		m_save_overwrite    = g_file_manager.get_project_file("./save_overwrite.json");
 		if (g.load_fsl_files)
 		{
@@ -145,6 +186,108 @@ namespace big
 		}
 	}
 
+	void stats_service::update_script_data_json(script_json& json)
+	{
+		for (auto& data : json)
+		{
+			if (data.save_var.data_ptr != 0)
+			{
+				data = data.save_var;
+			}
+			else
+			{
+				update_script_data_json(data);
+			}
+		}
+	}
+
+	static void update_script_var_from_json(script_save_var& save_var, const stats_service::script_json& json)
+	{
+		eScriptSaveType type = json[1].template get<eScriptSaveType>();
+		switch (type)
+		{
+		case eScriptSaveType::INT:
+		{
+			*reinterpret_cast<int*>(save_var.data_ptr) = json[0].template get<int>();
+			break;
+		}
+		case eScriptSaveType::INT64:
+		{
+			*reinterpret_cast<int64_t*>(save_var.data_ptr) = json[0].template get<int64_t>();
+			break;
+		}
+		case eScriptSaveType::ENUM:
+		{
+			*reinterpret_cast<int32_t*>(save_var.data_ptr) = json[0].template get<int32_t>();
+			break;
+		}
+		case eScriptSaveType::FLOAT:
+		{
+			*reinterpret_cast<float*>(save_var.data_ptr) = json[0].template get<float>();
+			break;
+		}
+		case eScriptSaveType::BOOL_:
+		{
+			*reinterpret_cast<BOOL*>(save_var.data_ptr) = json[0].template get<BOOL>();
+			break;
+		}
+		case eScriptSaveType::TEXT_LABEL_15_:
+		{
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 15);
+			break;
+		}
+		case eScriptSaveType::TEXT_LABEL_23_:
+		{
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 23);
+			break;
+		}
+		case eScriptSaveType::TEXT_LABEL_31_:
+		{
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 31);
+			break;
+		}
+		case eScriptSaveType::TEXT_LABEL_:
+		case eScriptSaveType::TEXT_LABEL_63_:
+		{
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 63);
+			break;
+		}
+		default:
+		{
+			LOG(WARNING) << "Unknown stat type: " << (int)type << " In script data";
+			break;
+		}
+		}
+	}
+
+	void stats_service::load_script_data_from_json(const nlohmann::json& json)
+	{
+		m_script_save_data.visit([&](const script_json::json_pointer& p, script_json& j) {
+			if (j.is_array() && j.save_var.data_ptr != 0)
+			{
+				update_script_var_from_json(j.save_var, json[p]);
+			}
+		});
+	}
+
+	void stats_service::save_script_data_to_json()
+	{
+		try
+		{
+			update_script_data_json(m_script_save_data);
+		}
+		catch (const std::exception& ex)
+		{
+			LOG(FATAL) << "Script data failed to save: " << ex.what();
+			return;
+		}
+
+		std::ofstream script_save(m_save_file_script.get_path(), std::ios::out | std::ios::trunc);
+
+		script_save << m_script_save_data.dump(1, '	');
+		script_save.close();
+	}
+
 	void stats_service::save_internal_stats_to_json(uint8_t char_index)
 	{
 		nlohmann::json json;
@@ -227,6 +370,7 @@ namespace big
 			LOG(VERBOSE) << "Loading save_overwrite.json";
 			file.open(m_save_overwrite.get_path());
 		}
+
 		try
 		{
 			// Ignore comments for save_overwrite.json
@@ -252,6 +396,31 @@ namespace big
 		catch (const std::exception& ex)
 		{
 			LOG(WARNING) << "Detected corrupt save file: " << ex.what();
+		}
+
+		return false;
+	}
+
+	bool stats_service::load_internal_script_data_from_json()
+	{
+		if (!m_save_file_script.exists())
+		{
+			return false;
+		}
+
+		try
+		{
+			std::ifstream file(m_save_file_script.get_path());
+			LOG(VERBOSE) << "Loading save_script.json";
+
+			const nlohmann::json& json = nlohmann::json::parse(file);
+			load_script_data_from_json(json);
+
+			return true;
+		}
+		catch (const std::exception& ex)
+		{
+			LOG(WARNING) << "Detected corrupt script save file: " << ex.what();
 		}
 
 		return false;
@@ -344,7 +513,7 @@ namespace big
 			case eStatType::PROFILE_SETTING: break;
 			default:
 			{
-				LOG(VERBOSE) << "Unknown stat type: " << (int)stat.m_stat->GetTypeId() << "In stat: " << stat.m_hash;
+				LOG(WARNING) << "Unknown stat type: " << (int)stat.m_stat->GetTypeId() << "In stat: " << stat.m_hash;
 				break;
 			}
 			}
@@ -353,6 +522,8 @@ namespace big
 		int last_character = g_stats_service->get_stat_by_hash(RAGE_JOAAT("MPPLY_LAST_MP_CHAR"))->GetIntData();
 		save_internal_stats_to_json(0);
 		save_internal_stats_to_json(last_character + 1);
+
+		save_script_data_to_json();
 	}
 
 	bool stats_service::load_stats()
@@ -368,6 +539,8 @@ namespace big
 
 		// Load stat overrides last.
 		load_internal_stats_from_json(SAVE_OVERWRITE_INDEX);
+
+		load_internal_script_data_from_json();
 
 		const auto& stats = *g_pointers->m_stats;
 		for (const auto& stat : stats)
