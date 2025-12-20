@@ -279,7 +279,7 @@ namespace big
 		});
 	}
 
-	void stats_service::save_script_data()
+	void stats_service::save_script_data_to_json()
 	{
 		try
 		{
@@ -342,11 +342,6 @@ namespace big
 
 		file << json.dump(1, '	');
 		file.close();
-
-		if (char_index > 0)
-		{
-			save_script_data();
-		}
 	}
 
 	bool stats_service::load_internal_stats_from_json(uint8_t char_index)
@@ -534,6 +529,8 @@ namespace big
 		int last_character = g_stats_service->get_stat_by_hash(RAGE_JOAAT("MPPLY_LAST_MP_CHAR"))->GetIntData();
 		save_internal_stats_to_json(0);
 		save_internal_stats_to_json(last_character + 1);
+
+		save_script_data_to_json();
 	}
 
 	bool stats_service::load_stats()

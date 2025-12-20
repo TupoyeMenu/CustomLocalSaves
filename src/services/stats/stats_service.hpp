@@ -134,7 +134,7 @@ namespace big
 
 		void update_script_data_json(script_json& json);
 		void load_script_data_from_json(const nlohmann::json& json);
-		void save_script_data();
+		void save_script_data_to_json();
 
 		std::unordered_map<Hash, int> m_int_stats;
 		std::unordered_map<Hash, float> m_float_stats;
