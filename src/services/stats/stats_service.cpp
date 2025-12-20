@@ -9,6 +9,49 @@
 
 namespace big
 {
+
+	template <class Fnc>
+	void script_save_json_metadata::visit(const Fnc& fnc)
+	{
+		do_visit(stats_service::script_json::json_pointer{}, fnc);
+	}
+
+	template <class Ptr, class Fnc>
+	void script_save_json_metadata::do_visit(const Ptr& ptr, const Fnc& fnc)
+	{
+		using value_t = nlohmann::detail::value_t;
+		stats_service::script_json& j = *static_cast<stats_service::script_json*>(this);
+		switch (j.type())
+		{
+			case value_t::object:
+				fnc(ptr, j);
+				for (const auto& entry : j.items())
+				{
+					entry.value().do_visit(ptr / entry.key(), fnc);
+				}
+				break;
+			case value_t::array:
+				fnc(ptr, j);
+				for (std::size_t i = 0; i < j.size(); ++i)
+				{
+					j.at(i).do_visit(ptr / std::to_string(i), fnc);
+				}
+				break;
+			case value_t::null:
+			case value_t::string:
+			case value_t::boolean:
+			case value_t::number_integer:
+			case value_t::number_unsigned:
+			case value_t::number_float:
+			case value_t::binary:
+				fnc(ptr, j);
+				break;
+			case value_t::discarded:
+			default:
+				break;
+		}
+	}
+
 	stats_service::stats_service()
 	{
 		g_stats_service     = this;
@@ -148,30 +191,105 @@ namespace big
 
 	void stats_service::update_script_data_json(script_json& json)
 	{
-		try
+		for (auto& data : json)
 		{
-			for (auto& data : json)
+			if (data.save_var.data_ptr != 0)
 			{
-				if (data.save_var.data_ptr != 0)
+				data = data.save_var;
+			}
+			else
+			{
+				update_script_data_json(data);
+			}
+		}
+	}
+
+	static void update_script_var_from_json(script_save_var& save_var, const stats_service::script_json& json)
+	{
+		switch (json[1].template get<eScriptSaveType>())
+		{
+		case eScriptSaveType::INT:
+		{
+			*reinterpret_cast<int*>(save_var.data_ptr) = json[0].template get<int>();
+			break;
+		}
+		case eScriptSaveType::INT64:
+		{
+			*reinterpret_cast<int64_t*>(save_var.data_ptr) = json[0].template get<int64_t>();
+			break;
+		}
+		case eScriptSaveType::ENUM:
+		{
+			*reinterpret_cast<int32_t*>(save_var.data_ptr) = json[0].template get<int32_t>();
+			break;
+		}
+		case eScriptSaveType::FLOAT:
+		{
+			*reinterpret_cast<float*>(save_var.data_ptr) = json[0].template get<float>();
+			break;
+		}
+		case eScriptSaveType::BOOL_:
+		{
+			*reinterpret_cast<BOOL*>(save_var.data_ptr) = json[0].template get<BOOL>();
+			break;
+		}
+		case eScriptSaveType::TEXT_LABEL_15_:
+		{
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 15);
+			LOG(VERBOSE) << "Applied text to " << save_var.data_ptr << " (Text: " << json[0].template get<std::string>() << ")";
+			break;
+		}
+		case eScriptSaveType::TEXT_LABEL_23_:
+		{
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 23);
+			LOG(VERBOSE) << "Applied text to " << save_var.data_ptr << " (Text: " << json[0].template get<std::string>() << ")";
+			break;
+		}
+		case eScriptSaveType::TEXT_LABEL_31_:
+		{
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 31);
+			LOG(VERBOSE) << "Applied text to " << save_var.data_ptr << " (Text: " << json[0].template get<std::string>() << ")";
+			break;
+		}
+		case eScriptSaveType::TEXT_LABEL_:
+		case eScriptSaveType::TEXT_LABEL_63_:
+		{
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 63);
+			LOG(VERBOSE) << "Applied text to " << save_var.data_ptr << " (Text: " << json[0].template get<std::string>() << ")";
+			break;
+		}
+		}
+	}
+
+	void stats_service::load_script_data_from_json(const nlohmann::json& json)
+	{
+		LOG(VERBOSE) << "Loading script save data";
+		m_script_save_data.visit(
+			[&](const script_json::json_pointer& p,
+				script_json& j)
+		{
+			if (j.is_array() && j.save_var.data_ptr != 0)
+			{
+				update_script_var_from_json(j.save_var, json[p]);
+				if (!j[0].is_number() || j[0].get<int>() != 0)
 				{
-					data = data.save_var;
-				}
-				else
-				{
-					update_script_data_json(data);
+					LOG(VERBOSE) << json[p].dump();
 				}
 			}
+		});
+	}
+
+	void stats_service::save_script_data()
+	{
+		try
+		{
+			update_script_data_json(m_script_save_data);
 		}
 		catch (const std::exception& ex)
 		{
 			LOG(FATAL) << "Script data failed to save: " << ex.what();
 			return;
 		}
-	}
-
-	void stats_service::save_script_data()
-	{
-		update_script_data_json(m_script_save_data);
 
 		std::ofstream script_save(m_save_file_script.get_path(), std::ios::out | std::ios::trunc);
 
@@ -266,6 +384,7 @@ namespace big
 			LOG(VERBOSE) << "Loading save_overwrite.json";
 			file.open(m_save_overwrite.get_path());
 		}
+
 		try
 		{
 			// Ignore comments for save_overwrite.json
@@ -285,6 +404,29 @@ namespace big
 			load_stat_map_from_json(json["TEXTLABEL"], m_textlabel_stats, uses_human_readable_stat_names);
 			load_stat_map_from_json(json["PACKED"], m_packed_stats, uses_human_readable_stat_names);
 			load_stat_map_from_json(json["USERID"], m_userid_stats, uses_human_readable_stat_names);
+
+			return true;
+		}
+		catch (const std::exception& ex)
+		{
+			LOG(WARNING) << "Detected corrupt save file: " << ex.what();
+		}
+
+		return false;
+	}
+
+	bool stats_service::load_internal_script_data_from_json()
+	{
+		if (!m_save_file_script.exists())
+		{
+			return false;
+		}
+
+		try
+		{
+			std::ifstream file(m_save_file_script.get_path());
+			const nlohmann::json& json = nlohmann::json::parse(file);
+			load_script_data_from_json(json);
 
 			return true;
 		}
@@ -407,6 +549,8 @@ namespace big
 
 		// Load stat overrides last.
 		load_internal_stats_from_json(SAVE_OVERWRITE_INDEX);
+
+		load_internal_script_data_from_json();
 
 		const auto& stats = *g_pointers->m_stats;
 		for (const auto& stat : stats)

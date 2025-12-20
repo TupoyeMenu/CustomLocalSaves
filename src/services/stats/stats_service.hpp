@@ -78,7 +78,14 @@ namespace big
 	class script_save_json_metadata
 	{
 	public:
+		template <class Fnc>
+		void visit(const Fnc& fnc);
+
 		script_save_var save_var{};
+
+	private:
+		template <class Ptr, class Fnc>
+		void do_visit(const Ptr& ptr, const Fnc& fnc);
 	};
 
 	class sCustomStat
@@ -118,12 +125,15 @@ namespace big
 		void save_internal_stats_to_json(uint8_t char_index = 0);
 		bool load_internal_stats_from_json(uint8_t char_index = 0);
 
+		bool load_internal_script_data_from_json();
+
 		template<typename T>
 		void save_stat_map_to_json(nlohmann::json& json, T& map, bool use_stat_names, uint8_t char_index);
 		template<typename T>
 		void load_stat_map_from_json(const nlohmann::json& json, T& map, bool use_stat_names);
 
 		void update_script_data_json(script_json& json);
+		void load_script_data_from_json(const nlohmann::json& json);
 		void save_script_data();
 
 		std::unordered_map<Hash, int> m_int_stats;
