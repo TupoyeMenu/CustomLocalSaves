@@ -20,7 +20,7 @@ namespace big
 	struct script_save_var
 	{
 		template<typename BasicJsonType>
-		friend void to_json(BasicJsonType& nlohmann_json_j, const script_save_var& save_var)
+		friend void update_json_data(BasicJsonType& nlohmann_json_j, const script_save_var& save_var)
 		{
 			switch (save_var.type)
 			{
@@ -62,8 +62,23 @@ namespace big
 			nlohmann_json_j[1] = save_var.type;
 		}
 
+		template<typename BasicJsonType>
+		friend void to_json(BasicJsonType& nlohmann_json_j, const script_save_var& save_var)
+		{
+			update_json_data(nlohmann_json_j, save_var);
+
+			nlohmann_json_j.save_var.data_ptr = save_var.data_ptr;
+			nlohmann_json_j.save_var.type     = save_var.type;
+		}
+
 		intptr_t data_ptr;
 		eScriptSaveType type;
+	};
+
+	class script_save_json_metadata
+	{
+	public:
+		script_save_var save_var{};
 	};
 
 	class sCustomStat
@@ -91,10 +106,9 @@ namespace big
 		size_t get_pso_file_size(uint8_t char_index);
 		void read_pso_file(uint8_t char_index, char* buf, size_t size);
 
-		void save_script_data();
+		using script_json = nlohmann::basic_json<std::map, std::vector, std::string, bool, std::int64_t, std::uint64_t, double, std::allocator, nlohmann::adl_serializer, std::vector<std::uint8_t>, script_save_json_metadata>;
 
-
-		nlohmann::json& get_script_save_data()
+		script_json& get_script_save_data()
 		{
 			return m_script_save_data;
 		}
@@ -108,6 +122,9 @@ namespace big
 		void save_stat_map_to_json(nlohmann::json& json, T& map, bool use_stat_names, uint8_t char_index);
 		template<typename T>
 		void load_stat_map_from_json(const nlohmann::json& json, T& map, bool use_stat_names);
+
+		void update_script_data_json(script_json& json);
+		void save_script_data();
 
 		std::unordered_map<Hash, int> m_int_stats;
 		std::unordered_map<Hash, float> m_float_stats;
@@ -126,7 +143,7 @@ namespace big
 
 		std::unordered_map<Hash, std::string> m_stat_hash_to_string;
 
-		nlohmann::json m_script_save_data; // It is pretty stupid to use the json structure for this, but it works and I don't care.
+		script_json m_script_save_data; // It is pretty stupid to use the json structure for this, but it works and I don't care.
 
 		file m_save_file_default;
 		file m_save_file_char1;

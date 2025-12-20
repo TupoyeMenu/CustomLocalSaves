@@ -8,7 +8,7 @@ namespace big
 	{
 		static int indent = 0;
 		static bool in_sp_save;
-		static std::vector<nlohmann::json*> last_key;
+		static std::vector<stats_service::script_json*> last_key;
 
 		inline void START_SAVE_DATA(rage::scrNativeCallContext* src)
 		{

@@ -146,8 +146,33 @@ namespace big
 		}
 	}
 
+	void stats_service::update_script_data_json(script_json& json)
+	{
+		try
+		{
+			for (auto& data : json)
+			{
+				if (data.save_var.data_ptr != 0)
+				{
+					data = data.save_var;
+				}
+				else
+				{
+					update_script_data_json(data);
+				}
+			}
+		}
+		catch (const std::exception& ex)
+		{
+			LOG(FATAL) << "Script data failed to save: " << ex.what();
+			return;
+		}
+	}
+
 	void stats_service::save_script_data()
 	{
+		update_script_data_json(m_script_save_data);
+
 		std::ofstream script_save(m_save_file_script.get_path(), std::ios::out | std::ios::trunc);
 
 		script_save << m_script_save_data.dump(1, '	');
