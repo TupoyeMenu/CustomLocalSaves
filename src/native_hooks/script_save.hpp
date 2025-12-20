@@ -33,8 +33,8 @@ namespace big
 		}
 		inline void START_SAVE_STRUCT_WITH_SIZE(rage::scrNativeCallContext* src)
 		{
-			Any* struct_ptr = src->get_arg<Any*>(0);
-			int struct_size = src->get_arg<int>(1);
+			Any* struct_ptr         = src->get_arg<Any*>(0);
+			int struct_size         = src->get_arg<int>(1);
 			const char* struct_name = src->get_arg<const char*>(2);
 
 			if (!in_sp_save)
@@ -42,8 +42,7 @@ namespace big
 				(*last_key.back())[struct_name] = {};
 				last_key.emplace_back(&(*last_key.back())[struct_name]);
 
-				std::cout << std::string(last_key.size(), '	') << "Started save struct " << struct_name << " "
-				          << HEX_TO_UPPER(rage::literal_joaat(struct_name)) << "\n";
+				std::cout << std::string(last_key.size(), '	') << "Started save struct " << struct_name << " " << HEX_TO_UPPER(rage::literal_joaat(struct_name)) << "\n";
 				return;
 			}
 
@@ -55,7 +54,7 @@ namespace big
 			{
 				std::cout << std::string(last_key.size(), '	') << "Ended save struct" << "\n";
 
-				if(last_key.size() > 1)
+				if (last_key.size() > 1)
 					last_key.pop_back();
 				return;
 			}
@@ -64,8 +63,8 @@ namespace big
 		}
 		inline void START_SAVE_ARRAY_WITH_SIZE(rage::scrNativeCallContext* src)
 		{
-			Any* array_ptr = src->get_arg<Any*>(0);
-			int array_size = src->get_arg<int>(1);
+			Any* array_ptr         = src->get_arg<Any*>(0);
+			int array_size         = src->get_arg<int>(1);
 			const char* array_name = src->get_arg<const char*>(2);
 
 			if (!in_sp_save)
@@ -73,8 +72,7 @@ namespace big
 				(*last_key.back())[array_name] = {};
 				last_key.emplace_back(&(*last_key.back())[array_name]);
 
-				std::cout << std::string(last_key.size(), '	') << "Started save array " << array_name << " "
-				          << HEX_TO_UPPER(rage::literal_joaat(array_name)) << "\n";
+				std::cout << std::string(last_key.size(), '	') << "Started save array " << array_name << " " << HEX_TO_UPPER(rage::literal_joaat(array_name)) << "\n";
 				return;
 			}
 
@@ -86,7 +84,7 @@ namespace big
 			{
 				std::cout << std::string(last_key.size(), '	') << "Ended save array" << "\n";
 
-				if(last_key.size() > 1)
+				if (last_key.size() > 1)
 					last_key.pop_back();
 				return;
 			}
@@ -96,7 +94,7 @@ namespace big
 
 		inline void REGISTER_INT_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
@@ -109,7 +107,7 @@ namespace big
 		}
 		inline void REGISTER_INT64_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
@@ -122,7 +120,7 @@ namespace big
 		}
 		inline void REGISTER_ENUM_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
@@ -135,7 +133,7 @@ namespace big
 		}
 		inline void REGISTER_FLOAT_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
@@ -148,7 +146,7 @@ namespace big
 		}
 		inline void REGISTER_BOOL_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
@@ -161,7 +159,7 @@ namespace big
 		}
 		inline void REGISTER_TEXT_LABEL_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
@@ -174,7 +172,7 @@ namespace big
 		}
 		inline void REGISTER_TEXT_LABEL_15_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
@@ -187,7 +185,7 @@ namespace big
 		}
 		inline void REGISTER_TEXT_LABEL_23_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
@@ -200,7 +198,7 @@ namespace big
 		}
 		inline void REGISTER_TEXT_LABEL_31_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
@@ -213,7 +211,7 @@ namespace big
 		}
 		inline void REGISTER_TEXT_LABEL_63_TO_SAVE(rage::scrNativeCallContext* src)
 		{
-			Any* data_ptr = src->get_arg<Any*>(0);
+			Any* data_ptr    = src->get_arg<Any*>(0);
 			const char* name = src->get_arg<const char*>(1);
 
 			if (!in_sp_save)
