@@ -78,13 +78,13 @@ namespace big
 	class script_save_json_metadata
 	{
 	public:
-		template <class Fnc>
+		template<class Fnc>
 		void visit(const Fnc& fnc);
 
 		script_save_var save_var{};
 
 	private:
-		template <class Ptr, class Fnc>
+		template<class Ptr, class Fnc>
 		void do_visit(const Ptr& ptr, const Fnc& fnc);
 	};
 

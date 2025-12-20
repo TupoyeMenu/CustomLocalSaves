@@ -10,45 +10,42 @@
 namespace big
 {
 
-	template <class Fnc>
+	template<class Fnc>
 	void script_save_json_metadata::visit(const Fnc& fnc)
 	{
 		do_visit(stats_service::script_json::json_pointer{}, fnc);
 	}
 
-	template <class Ptr, class Fnc>
+	template<class Ptr, class Fnc>
 	void script_save_json_metadata::do_visit(const Ptr& ptr, const Fnc& fnc)
 	{
-		using value_t = nlohmann::detail::value_t;
+		using value_t                 = nlohmann::detail::value_t;
 		stats_service::script_json& j = *static_cast<stats_service::script_json*>(this);
 		switch (j.type())
 		{
-			case value_t::object:
-				fnc(ptr, j);
-				for (const auto& entry : j.items())
-				{
-					entry.value().do_visit(ptr / entry.key(), fnc);
-				}
-				break;
-			case value_t::array:
-				fnc(ptr, j);
-				for (std::size_t i = 0; i < j.size(); ++i)
-				{
-					j.at(i).do_visit(ptr / std::to_string(i), fnc);
-				}
-				break;
-			case value_t::null:
-			case value_t::string:
-			case value_t::boolean:
-			case value_t::number_integer:
-			case value_t::number_unsigned:
-			case value_t::number_float:
-			case value_t::binary:
-				fnc(ptr, j);
-				break;
-			case value_t::discarded:
-			default:
-				break;
+		case value_t::object:
+			fnc(ptr, j);
+			for (const auto& entry : j.items())
+			{
+				entry.value().do_visit(ptr / entry.key(), fnc);
+			}
+			break;
+		case value_t::array:
+			fnc(ptr, j);
+			for (std::size_t i = 0; i < j.size(); ++i)
+			{
+				j.at(i).do_visit(ptr / std::to_string(i), fnc);
+			}
+			break;
+		case value_t::null:
+		case value_t::string:
+		case value_t::boolean:
+		case value_t::number_integer:
+		case value_t::number_unsigned:
+		case value_t::number_float:
+		case value_t::binary: fnc(ptr, j); break;
+		case value_t::discarded:
+		default: break;
 		}
 	}
 
@@ -265,10 +262,7 @@ namespace big
 
 	void stats_service::load_script_data_from_json(const nlohmann::json& json)
 	{
-		m_script_save_data.visit(
-			[&](const script_json::json_pointer& p,
-				script_json& j)
-		{
+		m_script_save_data.visit([&](const script_json::json_pointer& p, script_json& j) {
 			if (j.is_array() && j.save_var.data_ptr != 0)
 			{
 				update_script_var_from_json(j.save_var, json[p]);
