@@ -26,27 +26,27 @@ namespace big
 			{
 			case eScriptSaveType::INT:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<int*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<int*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::INT64:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<int64_t*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<int64_t*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::ENUM:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<int32_t*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<int32_t*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::FLOAT:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<float*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<float*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::BOOL_:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<BOOL*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<BOOL*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::TEXT_LABEL_:
@@ -55,11 +55,10 @@ namespace big
 			case eScriptSaveType::TEXT_LABEL_31_:
 			case eScriptSaveType::TEXT_LABEL_63_:
 			{
-				nlohmann_json_j[0] = reinterpret_cast<const char*>(save_var.data_ptr);
+				nlohmann_json_j = reinterpret_cast<const char*>(save_var.data_ptr);
 				break;
 			}
 			}
-			nlohmann_json_j[1] = save_var.type;
 		}
 
 		template<typename BasicJsonType>
@@ -69,6 +68,33 @@ namespace big
 
 			nlohmann_json_j.save_var.data_ptr = save_var.data_ptr;
 			nlohmann_json_j.save_var.type     = save_var.type;
+		}
+
+		bool is_modified()
+		{
+			switch (type)
+			{
+			case eScriptSaveType::INT:
+			case eScriptSaveType::ENUM:
+			case eScriptSaveType::FLOAT:
+			case eScriptSaveType::BOOL_:
+			{
+				return *reinterpret_cast<int32_t*>(data_ptr) != 0;
+			}
+			case eScriptSaveType::INT64:
+			{
+				return *reinterpret_cast<int64_t*>(data_ptr) != 0;
+			}
+			case eScriptSaveType::TEXT_LABEL_:
+			case eScriptSaveType::TEXT_LABEL_15_:
+			case eScriptSaveType::TEXT_LABEL_23_:
+			case eScriptSaveType::TEXT_LABEL_31_:
+			case eScriptSaveType::TEXT_LABEL_63_:
+			{
+				return !std::string(reinterpret_cast<const char*>(data_ptr)).empty();
+			}
+			default: return true;
+			}
 		}
 
 		intptr_t data_ptr;
@@ -131,6 +157,10 @@ namespace big
 		void save_stat_map_to_json(nlohmann::json& json, T& map, bool use_stat_names, uint8_t char_index);
 		template<typename T>
 		void load_stat_map_from_json(const nlohmann::json& json, T& map, bool use_stat_names);
+		template<typename T>
+		void load_stat_map_from_json_modern(const nlohmann::json& json, T& map, bool use_stat_names);
+		template<typename T>
+		void load_stat_map_from_json_legacy(const nlohmann::json& json, T& map, bool use_stat_names);
 
 		void update_script_data_json(script_json& json);
 		void load_script_data_from_json(const nlohmann::json& json);

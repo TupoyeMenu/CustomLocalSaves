@@ -150,7 +150,7 @@ namespace big
 	template<typename T>
 	void stats_service::save_stat_map_to_json(nlohmann::json& json, T& map, bool use_stat_names, uint8_t char_index)
 	{
-		auto stats = nlohmann::json::array();
+		auto stats = nlohmann::json::object();
 		for (auto stat : map)
 		{
 			if (get_char_index_from_stat(get_stat_by_hash(stat.first)) != char_index)
@@ -158,28 +158,59 @@ namespace big
 
 			if (use_stat_names)
 			{
-				stats.push_back({m_stat_hash_to_string[stat.first], stat.second});
+				stats[m_stat_hash_to_string[stat.first]] = stat.second;
 			}
 			else
 			{
-				stats.push_back({stat.first, stat.second});
+				stats[std::to_string(stat.first)] = stat.second;
 			}
 		}
 		json = stats;
 	}
+
 	template<typename T>
 	void stats_service::load_stat_map_from_json(const nlohmann::json& json, T& map, bool use_stat_names)
 	{
+		if (json.is_array())
+		{
+			load_stat_map_from_json_legacy(json, map, use_stat_names);
+		}
+		else
+		{
+			load_stat_map_from_json_modern(json, map, use_stat_names);
+		}
+	}
+	template<typename T>
+	void stats_service::load_stat_map_from_json_modern(const nlohmann::json& json, T& map, bool use_stat_names)
+	{
 		if (use_stat_names)
 		{
-			for (auto stat : json)
+			for (const auto& stat : json.items())
+			{
+				map[rage::joaat(stat.key())] = stat.value();
+			}
+		}
+		else
+		{
+			for (const auto& stat : json.items())
+			{
+				map[std::stoul(stat.key())] = stat.value();
+			}
+		}
+	}
+	template<typename T>
+	void stats_service::load_stat_map_from_json_legacy(const nlohmann::json& json, T& map, bool use_stat_names)
+	{
+		if (use_stat_names)
+		{
+			for (const auto& stat : json)
 			{
 				map[rage::joaat(stat[0])] = stat[1];
 			}
 		}
 		else
 		{
-			for (auto stat : json)
+			for (const auto& stat : json)
 			{
 				map[stat[0]] = stat[1];
 			}
@@ -203,58 +234,52 @@ namespace big
 
 	static void update_script_var_from_json(script_save_var& save_var, const stats_service::script_json& json)
 	{
-		eScriptSaveType type = json[1].template get<eScriptSaveType>();
-		switch (type)
+		switch (save_var.type)
 		{
 		case eScriptSaveType::INT:
 		{
-			*reinterpret_cast<int*>(save_var.data_ptr) = json[0].template get<int>();
+			*reinterpret_cast<int*>(save_var.data_ptr) = json.template get<int>();
 			break;
 		}
 		case eScriptSaveType::INT64:
 		{
-			*reinterpret_cast<int64_t*>(save_var.data_ptr) = json[0].template get<int64_t>();
+			*reinterpret_cast<int64_t*>(save_var.data_ptr) = json.template get<int64_t>();
 			break;
 		}
 		case eScriptSaveType::ENUM:
 		{
-			*reinterpret_cast<int32_t*>(save_var.data_ptr) = json[0].template get<int32_t>();
+			*reinterpret_cast<int32_t*>(save_var.data_ptr) = json.template get<int32_t>();
 			break;
 		}
 		case eScriptSaveType::FLOAT:
 		{
-			*reinterpret_cast<float*>(save_var.data_ptr) = json[0].template get<float>();
+			*reinterpret_cast<float*>(save_var.data_ptr) = json.template get<float>();
 			break;
 		}
 		case eScriptSaveType::BOOL_:
 		{
-			*reinterpret_cast<BOOL*>(save_var.data_ptr) = json[0].template get<BOOL>();
+			*reinterpret_cast<BOOL*>(save_var.data_ptr) = json.template get<BOOL>();
 			break;
 		}
 		case eScriptSaveType::TEXT_LABEL_15_:
 		{
-			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 15);
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json.template get<std::string>().c_str(), 15);
 			break;
 		}
 		case eScriptSaveType::TEXT_LABEL_23_:
 		{
-			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 23);
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json.template get<std::string>().c_str(), 23);
 			break;
 		}
 		case eScriptSaveType::TEXT_LABEL_31_:
 		{
-			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 31);
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json.template get<std::string>().c_str(), 31);
 			break;
 		}
 		case eScriptSaveType::TEXT_LABEL_:
 		case eScriptSaveType::TEXT_LABEL_63_:
 		{
-			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json[0].template get<std::string>().c_str(), 63);
-			break;
-		}
-		default:
-		{
-			LOG(WARNING) << "Unknown stat type: " << (int)type << " In script data";
+			strncpy(reinterpret_cast<char*>(save_var.data_ptr), json.template get<std::string>().c_str(), 63);
 			break;
 		}
 		}
@@ -263,9 +288,10 @@ namespace big
 	void stats_service::load_script_data_from_json(const nlohmann::json& json)
 	{
 		m_script_save_data.visit([&](const script_json::json_pointer& p, script_json& j) {
-			if (j.is_array() && j.save_var.data_ptr != 0)
+			const auto& var = json[p];
+			if (!var.is_null() && j.is_primitive() && j.save_var.data_ptr != 0)
 			{
-				update_script_var_from_json(j.save_var, json[p]);
+				update_script_var_from_json(j.save_var, var);
 			}
 		});
 	}
