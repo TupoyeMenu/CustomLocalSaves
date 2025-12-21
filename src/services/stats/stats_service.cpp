@@ -150,7 +150,7 @@ namespace big
 	template<typename T>
 	void stats_service::save_stat_map_to_json(nlohmann::json& json, T& map, bool use_stat_names, uint8_t char_index)
 	{
-		auto stats = nlohmann::json::array();
+		auto stats = nlohmann::json::object();
 		for (auto stat : map)
 		{
 			if (get_char_index_from_stat(get_stat_by_hash(stat.first)) != char_index)
@@ -158,11 +158,11 @@ namespace big
 
 			if (use_stat_names)
 			{
-				stats.push_back({m_stat_hash_to_string[stat.first], stat.second});
+				stats[m_stat_hash_to_string[stat.first]] = stat.second;
 			}
 			else
 			{
-				stats.push_back({stat.first, stat.second});
+				stats[std::to_string(stat.first)] = stat.second;
 			}
 		}
 		json = stats;
@@ -172,16 +172,16 @@ namespace big
 	{
 		if (use_stat_names)
 		{
-			for (auto stat : json)
+			for (const auto& stat : json.items())
 			{
-				map[rage::joaat(stat[0])] = stat[1];
+				map[rage::joaat(stat.key())] = stat.value();
 			}
 		}
 		else
 		{
-			for (auto stat : json)
+			for (const auto& stat : json.items())
 			{
-				map[stat[0]] = stat[1];
+				map[std::stoul(stat.key())] = stat.value();
 			}
 		}
 	}
