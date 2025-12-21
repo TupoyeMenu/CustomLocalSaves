@@ -26,27 +26,27 @@ namespace big
 			{
 			case eScriptSaveType::INT:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<int*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<int*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::INT64:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<int64_t*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<int64_t*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::ENUM:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<int32_t*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<int32_t*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::FLOAT:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<float*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<float*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::BOOL_:
 			{
-				nlohmann_json_j[0] = *reinterpret_cast<BOOL*>(save_var.data_ptr);
+				nlohmann_json_j = *reinterpret_cast<BOOL*>(save_var.data_ptr);
 				break;
 			}
 			case eScriptSaveType::TEXT_LABEL_:
@@ -55,11 +55,10 @@ namespace big
 			case eScriptSaveType::TEXT_LABEL_31_:
 			case eScriptSaveType::TEXT_LABEL_63_:
 			{
-				nlohmann_json_j[0] = reinterpret_cast<const char*>(save_var.data_ptr);
+				nlohmann_json_j = reinterpret_cast<const char*>(save_var.data_ptr);
 				break;
 			}
 			}
-			nlohmann_json_j[1] = save_var.type;
 		}
 
 		template<typename BasicJsonType>
