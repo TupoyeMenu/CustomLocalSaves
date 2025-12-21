@@ -72,23 +72,31 @@ namespace big
 
 		main_batch.add("SkipMoneyCheck1", "84 C0 0F 85 93 01 00 00 48", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_skip_money_check1 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x48, 0xE9}).get();
+			m_earn_money = ptr.sub(0x2D).as<functions::earn_money>();
 		});
 		main_batch.add("SkipMoneyCheck1", "84 C0 0F 84 ? ? ? ? 80 3D ? ? ? ? 00 0F 84 ? ? ? ? E8 ? ? ? ? 84 C0 0F 84", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 			m_skip_money_check1 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90, 0x90, 0x90, 0x90, 0x90}).get();
+			m_earn_money = ptr.sub(0x3A).as<functions::earn_money>();
 		});
 		main_batch.add("SkipMoneyCheck2", "84 C0 ? ? AD 01 00 00 48 8B 8D", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_skip_money_check2 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x48, 0xE9}).get();
+			m_spend_money = ptr.sub(0x38).as<functions::spend_money>();
 		});
 		main_batch.add("SkipMoneyCheck2", "84 C0 ? ? 31 F6 48 85 FF", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 			m_skip_money_check2 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
+			m_spend_money = ptr.sub(0x42).as<functions::spend_money>();
 		});
 		main_batch.add("SkipMoneyCheck3", "84 C0 ? ? 83 C9 FF E8 ? ? ? ? 48 85", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_skip_money_check3 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
-			m_skip_money_check4 = memory::byte_patch::make(ptr.add(2).add(115).as<PVOID>(), std::vector{0x90, 0x90}).get();
 		});
 		main_batch.add("SkipMoneyCheck3", "84 C0 ? ? B9 FF FF FF FF E8 ? ? ? ? 48 85", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 			m_skip_money_check3 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
-			m_skip_money_check4 = memory::byte_patch::make(ptr.add(2).add(241).as<PVOID>(), std::vector{0x90, 0x90}).get();
+		});
+		main_batch.add("SkipMoneyCheck4", "84 C0 ? ? E8 ? ? ? ? 48 85 C0 75 ? B2", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
+			m_skip_money_check4 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
+		});
+		main_batch.add("SkipMoneyCheck4", "74 26 E8 ? ? ? ? 48 85 C0 0F", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_skip_money_check4 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();
 		});
 		main_batch.add("SkipMoneyCheck5", "84 C0 ? ? 8B CB E8 ? ? ? ? 48 85 C0 7E", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_skip_money_check5 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x90, 0x90}).get();

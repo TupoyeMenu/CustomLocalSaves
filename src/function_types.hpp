@@ -9,4 +9,6 @@ namespace big::functions
 
 	using ptr_to_handle = Entity (*)(void*);
 	using handle_to_ptr = rage::CDynamicEntity* (*)(Entity);
+	using earn_money = bool (*)(int64_t money_spent, bool, bool, void*, Hash stat_hash, Hash stat_hash_no_char, bool);
+	using spend_money = bool (*)(int64_t money_spent, bool, bool, bool, bool, void*, Hash stat_hash, Hash stat_hash_no_char, int, bool, bool);
 }

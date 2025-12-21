@@ -24,6 +24,8 @@ namespace big
 		g_pointers->m_skip_money_check2->apply();
 		g_pointers->m_skip_money_check3->apply();
 		g_pointers->m_skip_money_check3->apply();
+		g_pointers->m_skip_money_check4->apply();
+		g_pointers->m_skip_money_check6->apply();
 		if(!g_is_enhanced)
 		{
 			g_pointers->m_skip_money_check5->apply();
@@ -34,7 +36,6 @@ namespace big
 		}
 		g_pointers->m_file_not_found_check->apply(); // When a cloud file failes to load, create a new one
 
-		g_pointers->m_skip_money_check6->apply();
 		skip_profile_stats_patch::apply(); // Skip by default
 		g_pointers->m_mp_save_download_patch->apply();
 

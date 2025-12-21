@@ -93,7 +93,7 @@ ninja
 | Pocakking                                                  | [BigBaseV2](https://github.com/Pocakking/BigBaseV2)                    |
 | spankerincrease(gir489)                                    | [BigBaseV2-fix](https://bitbucket.org/gir489/bigbasev2-fix)            |
 | [YimMenu](https://github.com/YimMenu/YimMenu) contributors | Updates for newer GTA V versions, most of the code is stolen from them |
-| FSL                                                        | Saved my save, help with profile stats                                 |
+| FSL                                                        | Saved my save, help with profile stats, help with casino chips         |
 | tupoy-ya                                                   | Being stupid                                                           |
 
 ## License

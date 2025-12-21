@@ -59,6 +59,8 @@ namespace big
 		int* m_mp_save_download_error;
 
 		PVOID m_construct_basket;
+		functions::spend_money m_spend_money;
+		functions::earn_money m_earn_money;
 	};
 
 	inline pointers* g_pointers{};

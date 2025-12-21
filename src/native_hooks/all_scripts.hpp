@@ -78,6 +78,65 @@ namespace big
 			src->set_return_value<BOOL>(TRUE);
 		}
 
+		// Implemented here because the original function is obfuscated.
+		inline void NETWORK_CASINO_BUY_CHIPS(rage::scrNativeCallContext* src)
+		{
+			int money_spent    = src->get_arg<int>(0);
+			int chips_bought   = src->get_arg<int>(1);
+			int last_character = g_stats_service->get_stat_by_hash(RAGE_JOAAT("MPPLY_LAST_MP_CHAR"))->GetIntData();
+
+			if (money_spent < 0 || chips_bought <= 0)
+			{
+				src->set_return_value<BOOL>(FALSE);
+				return;
+			}
+
+			Hash MPX_MONEY_SPENT_BETTING = rage::joaat(std::format("MP{}_MONEY_SPENT_BETTING", last_character));
+			if (!g_pointers->m_spend_money(money_spent, false, true, false, false, nullptr, MPX_MONEY_SPENT_BETTING, RAGE_JOAAT("MONEY_SPENT_BETTING"), -1, false, false))
+			{
+				src->set_return_value<BOOL>(FALSE);
+				return;
+			}
+
+			sStatData* CASINO_CHIPS = g_stats_service->get_stat_by_hash(rage::joaat(std::format("MP{}_CASINO_CHIPS", last_character)));
+
+			int chips = CASINO_CHIPS->GetIntData();
+			CASINO_CHIPS->SetIntData(chips+chips_bought);
+
+			src->set_return_value<BOOL>(TRUE);
+		}
+		inline void NETWORK_CASINO_SELL_CHIPS(rage::scrNativeCallContext* src)
+		{
+			int money_earned   = src->get_arg<int>(0);
+			int chips_sold     = src->get_arg<int>(1);
+			int last_character = g_stats_service->get_stat_by_hash(RAGE_JOAAT("MPPLY_LAST_MP_CHAR"))->GetIntData();
+
+			if (money_earned < 0 || chips_sold <= 0)
+			{
+				src->set_return_value<BOOL>(FALSE);
+				return;
+			}
+
+			sStatData* CASINO_CHIPS = g_stats_service->get_stat_by_hash(rage::joaat(std::format("MP{}_CASINO_CHIPS", last_character)));
+			int chips = CASINO_CHIPS->GetIntData();
+			if (chips < chips_sold)
+			{
+				src->set_return_value<BOOL>(FALSE);
+				return;
+			}
+
+			Hash MPX_MONEY_SPENT_BETTING = rage::joaat(std::format("MP{}_MONEY_EARN_BETTING", last_character));
+			if (!g_pointers->m_earn_money(money_earned, true, false, nullptr, MPX_MONEY_SPENT_BETTING, 0, false))
+			{
+				src->set_return_value<BOOL>(FALSE);
+				return;
+			}
+
+			CASINO_CHIPS->SetIntData(chips-chips_sold);
+
+			src->set_return_value<BOOL>(TRUE);
+		}
+
 		// Alternative to g_pointers->m_skip_money_check5
 		inline void NETWORK_CLEAR_CHARACTER_WALLET(rage::scrNativeCallContext* src)
 		{

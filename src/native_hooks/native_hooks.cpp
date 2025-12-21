@@ -122,6 +122,8 @@ namespace big
 
 		add_native_detour(0xF70EFA14FE091429, all_scripts::WITHDRAW_VC);
 		add_native_detour(0xE260E0BB9CD995AC, all_scripts::DEPOSIT_VC);
+		add_native_detour(0x3BD101471C7F9EEC, all_scripts::NETWORK_CASINO_BUY_CHIPS);
+		add_native_detour(0xED44897CB336F480, all_scripts::NETWORK_CASINO_SELL_CHIPS);
 		if (g_is_enhanced)
 		{
 			add_native_detour(0xA921DED15FDF28F5, all_scripts::NETWORK_CLEAR_CHARACTER_WALLET);
