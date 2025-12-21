@@ -70,6 +70,33 @@ namespace big
 			nlohmann_json_j.save_var.type     = save_var.type;
 		}
 
+		bool is_modified()
+		{
+			switch (type)
+			{
+			case eScriptSaveType::INT:
+			case eScriptSaveType::ENUM:
+			case eScriptSaveType::FLOAT:
+			case eScriptSaveType::BOOL_:
+			{
+				return *reinterpret_cast<int32_t*>(data_ptr) != 0;
+			}
+			case eScriptSaveType::INT64:
+			{
+				return *reinterpret_cast<int64_t*>(data_ptr) != 0;
+			}
+			case eScriptSaveType::TEXT_LABEL_:
+			case eScriptSaveType::TEXT_LABEL_15_:
+			case eScriptSaveType::TEXT_LABEL_23_:
+			case eScriptSaveType::TEXT_LABEL_31_:
+			case eScriptSaveType::TEXT_LABEL_63_:
+			{
+				return !std::string(reinterpret_cast<const char*>(data_ptr)).empty();
+			}
+			default: return true;
+			}
+		}
+
 		intptr_t data_ptr;
 		eScriptSaveType type;
 	};
@@ -130,6 +157,10 @@ namespace big
 		void save_stat_map_to_json(nlohmann::json& json, T& map, bool use_stat_names, uint8_t char_index);
 		template<typename T>
 		void load_stat_map_from_json(const nlohmann::json& json, T& map, bool use_stat_names);
+		template<typename T>
+		void load_stat_map_from_json_modern(const nlohmann::json& json, T& map, bool use_stat_names);
+		template<typename T>
+		void load_stat_map_from_json_legacy(const nlohmann::json& json, T& map, bool use_stat_names);
 
 		void update_script_data_json(script_json& json);
 		void load_script_data_from_json(const nlohmann::json& json);

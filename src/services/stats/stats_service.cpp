@@ -167,8 +167,21 @@ namespace big
 		}
 		json = stats;
 	}
+
 	template<typename T>
 	void stats_service::load_stat_map_from_json(const nlohmann::json& json, T& map, bool use_stat_names)
+	{
+		if (json.is_array())
+		{
+			load_stat_map_from_json_legacy(json, map, use_stat_names);
+		}
+		else
+		{
+			load_stat_map_from_json_modern(json, map, use_stat_names);
+		}
+	}
+	template<typename T>
+	void stats_service::load_stat_map_from_json_modern(const nlohmann::json& json, T& map, bool use_stat_names)
 	{
 		if (use_stat_names)
 		{
@@ -182,6 +195,24 @@ namespace big
 			for (const auto& stat : json.items())
 			{
 				map[std::stoul(stat.key())] = stat.value();
+			}
+		}
+	}
+	template<typename T>
+	void stats_service::load_stat_map_from_json_legacy(const nlohmann::json& json, T& map, bool use_stat_names)
+	{
+		if (use_stat_names)
+		{
+			for (const auto& stat : json)
+			{
+				map[rage::joaat(stat[0])] = stat[1];
+			}
+		}
+		else
+		{
+			for (const auto& stat : json)
+			{
+				map[stat[0]] = stat[1];
 			}
 		}
 	}
