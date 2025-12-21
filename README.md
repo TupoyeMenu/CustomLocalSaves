@@ -20,41 +20,26 @@ It uses the same syntax as the other save files, but it is never written to.
 Here is an example `save_overwrite.json` that will refil your armor every time you load into GTA Online.
 ```json
 {
-	"BOOL": [],
-	"DATE": [],
-	"FLOAT": [],
-	"INT": [
-		[
-			"MP0_MP_CHAR_ARMOUR_1_COUNT",
-			10
-		],
-		[
-			"MP0_MP_CHAR_ARMOUR_2_COUNT",
-			10
-		],
-		[
-			"MP0_MP_CHAR_ARMOUR_3_COUNT",
-			10
-		],
-		[
-			"MP0_MP_CHAR_ARMOUR_4_COUNT",
-			10
-		],
-		[
-			"MP0_MP_CHAR_ARMOUR_5_COUNT",
-			10
-		]
-	],
-	"INT64": [],
-	"PACKED": [],
-	"POS": [],
-	"STRING": [],
-	"TEXTLABEL": [],
-	"UINT16": [],
-	"UINT32": [],
-	"UINT64": [],
-	"UINT8": [],
-	"USERID": [],
+	"BOOL": {},
+	"DATE": {},
+	"FLOAT": {},
+	"INT": {
+			"MP0_MP_CHAR_ARMOUR_1_COUNT": 10,
+			"MP0_MP_CHAR_ARMOUR_2_COUNT": 10,
+			"MP0_MP_CHAR_ARMOUR_3_COUNT": 10,
+			"MP0_MP_CHAR_ARMOUR_4_COUNT": 10,
+			"MP0_MP_CHAR_ARMOUR_5_COUNT": 10
+	},
+	"INT64": {},
+	"PACKED": {},
+	"POS": {},
+	"STRING": {},
+	"TEXTLABEL": {},
+	"UINT16": {},
+	"UINT32": {},
+	"UINT64": {},
+	"UINT8": {},
+	"USERID": {},
 	"uses_human_readable_stat_names": true
 }
 ```
