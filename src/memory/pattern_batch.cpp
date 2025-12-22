@@ -20,15 +20,15 @@ namespace memory
 		bool all_found = true;
 		for (auto& entry : m_entries)
 		{
-			if(entry.m_game_branch != eGameBranch::DontCare && entry.m_game_branch != big::get_game_branch())
+			if (entry.m_game_branch != eGameBranch::DontCare && entry.m_game_branch != big::get_game_branch())
 			{
 				continue;
 			}
-			if(entry.m_min_version != -1 && entry.m_min_version > big::g_game_version) // g_game_version is not implemented
+			if (entry.m_min_version != -1 && entry.m_min_version > big::g_game_version) // g_game_version is not implemented
 			{
 				continue;
 			}
-			if(entry.m_max_version != -1 && entry.m_max_version < big::g_game_version)
+			if (entry.m_max_version != -1 && entry.m_max_version < big::g_game_version)
 			{
 				continue;
 			}
@@ -38,8 +38,12 @@ namespace memory
 				if (entry.m_callback)
 				{
 					std::invoke(std::move(entry.m_callback), result);
-					LOG(INFO) << "Found '" << entry.m_name << "' GTA5.exe+"
-					                       << HEX_TO_UPPER(result.as<DWORD64>() - region.begin().as<DWORD64>());
+
+					big::LOGIF(INFO,
+					    big::g.enable_debug_logs,
+					    "Found '{}' GTA5.exe+0x{:X}",
+					    entry.m_name,
+					    result.as<DWORD64>() - region.begin().as<DWORD64>());
 				}
 				else
 				{

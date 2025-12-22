@@ -84,4 +84,16 @@ namespace big
 		inline Vector3 pos;
 		inline Vehicle veh;
 	}
+
+	template<typename ...Args>
+	inline void LOGIF(const eLogLevel level, bool shouldLog, LogIntermediate formatString, Args&&... formatArgs)
+	{
+		if (!shouldLog)
+		{
+			return;
+		}
+
+		auto capture = LogCapture(level, std::move(formatString.Location()), std::nullopt);
+		capture << VFORMAT(formatString.FormatString(), MAKE_FORMAT_ARGS(formatArgs...));
+	}
 }

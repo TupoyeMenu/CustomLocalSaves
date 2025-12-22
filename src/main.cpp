@@ -12,10 +12,9 @@
 #include "native_hooks/native_hooks.hpp"
 #include "pointers.hpp"
 #include "script_mgr.hpp"
+#include "services/stats/stats_service.hpp"
 #include "thread_pool.hpp"
 #include "util/is_enhanced.hpp"
-
-#include "services/stats/stats_service.hpp"
 
 #ifdef ENABLE_EXCEPTION_HANDLER
 	#include "logger/exception_handler.hpp"
@@ -60,42 +59,43 @@ BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
 			    try
 			    {
 				    auto thread_pool_instance = std::make_unique<thread_pool>();
-				    LOG(INFO) << "Thread pool initialized.";
+				    LOGF(INFO, "Thread pool initialized.");
 
 				    g.init(g_file_manager.get_project_file("./settings.json"));
-				    LOG(INFO) << "Settings Loaded.";
+				    LOGIF(INFO, g.enable_debug_logs, "Settings Loaded.");
 
 				    auto pointers_instance = std::make_unique<pointers>();
-				    LOG(INFO) << "Pointers initialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Pointers initialized.");
 
 				    auto byte_patch_manager_instance = std::make_unique<byte_patch_manager>();
-				    LOG(INFO) << "Byte Patch Manager initialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Byte Patch Manager initialized.");
 
 				    auto fiber_pool_instance = std::make_unique<fiber_pool>(10);
-				    LOG(INFO) << "Fiber pool initialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Fiber pool initialized.");
 
 				    auto hooking_instance = std::make_unique<hooking>();
-				    LOG(INFO) << "Hooking initialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Hooking initialized.");
 
-				    auto stats_service_instance          = std::make_unique<stats_service>();
+				    auto stats_service_instance = std::make_unique<stats_service>();
+				    LOGIF(INFO, g.enable_debug_logs, "Stats service initialized.");
 
 				    g_script_mgr.add_script(std::make_unique<script>(&backend::loop));
-				    LOG(INFO) << "Scripts registered.";
+				    LOGIF(INFO, g.enable_debug_logs, "Scripts registered.");
 
 				    g_hooking->enable();
-				    LOG(INFO) << "Hooking enabled.";
+				    LOGIF(INFO, g.enable_debug_logs, "Hooking enabled.");
 
 				    auto native_hooks_instance = std::make_unique<native_hooks>();
-				    LOG(INFO) << "Dynamic native hooker initialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Dynamic native hooker initialized.");
 
 				    while (g_running)
 					    std::this_thread::sleep_for(500ms);
 
 				    g_hooking->disable();
-				    LOG(INFO) << "Hooking disabled.";
+				    LOGIF(INFO, g.enable_debug_logs, "Hooking disabled.");
 
 				    g_script_mgr.remove_all_scripts();
-				    LOG(INFO) << "Scripts unregistered.";
+				    LOGIF(INFO, g.enable_debug_logs, "Scripts unregistered.");
 
 				    // cleans up the thread responsible for saving settings
 				    g.destroy();
@@ -103,24 +103,25 @@ BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
 				    // Make sure that all threads created don't have any blocking loops
 				    // otherwise make sure that they have stopped executing
 				    thread_pool_instance->destroy();
-				    LOG(INFO) << "Destroyed thread pool.";
+				    LOGIF(INFO, g.enable_debug_logs, "Destroyed thread pool.");
 
 				    stats_service_instance.reset();
+				    LOGIF(INFO, g.enable_debug_logs, "Stats service uninitialized.");
 
 				    hooking_instance.reset();
-				    LOG(INFO) << "Hooking uninitialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Hooking uninitialized.");
 
 				    native_hooks_instance.reset();
-				    LOG(INFO) << "Dynamic native hooker uninitialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Dynamic native hooker uninitialized.");
 
 				    fiber_pool_instance.reset();
-				    LOG(INFO) << "Fiber pool uninitialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Fiber pool uninitialized.");
 
 				    byte_patch_manager_instance.reset();
-				    LOG(INFO) << "Byte Patch Manager uninitialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Byte Patch Manager uninitialized.");
 
 				    pointers_instance.reset();
-				    LOG(INFO) << "Pointers uninitialized.";
+				    LOGIF(INFO, g.enable_debug_logs, "Pointers uninitialized.");
 			    }
 			    catch (std::exception const& ex)
 			    {

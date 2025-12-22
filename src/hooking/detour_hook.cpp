@@ -33,7 +33,7 @@ namespace big
 
 		if (auto status = MH_CreateHook(m_target, m_detour, &m_original); status == MH_OK)
 		{
-			LOG(INFO) << "Created hook '" << m_name << "'.";
+			LOGIF(INFO, g.enable_debug_logs, "Created hook '{}'.", m_name);
 		}
 		else
 		{

@@ -54,7 +54,7 @@ namespace big
 			{
 				// Make sure cloud load fails since we already have the stats.
 				_this->m_download_status = 2;
-				LOGF(VERBOSE, "Loaded JSON file for char slot {}", _this->m_char_slot);
+				LOGIF(VERBOSE, g.enable_debug_logs, "Loaded JSON file for char slot {}", _this->m_char_slot);
 				break;
 			}
 
@@ -72,7 +72,7 @@ namespace big
 			pso_buffer.resize(size, '\0');
 			g_stats_service->read_pso_file(_this->m_char_slot, pso_buffer.data(), size);
 			pso_loaded = true;
-			LOGF(VERBOSE, "Loaded PSO file for char slot {}", _this->m_char_slot);
+			LOGIF(VERBOSE, g.enable_debug_logs, "Loaded PSO file for char slot {}", _this->m_char_slot);
 
 			og_buffer_ptr             = _this->m_save_buffer;
 			og_buffer_size            = _this->m_save_buffer_size;
