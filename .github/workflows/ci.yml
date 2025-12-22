@@ -16,10 +16,10 @@ jobs:
         uses: microsoft/setup-msbuild@v1
 
       - name: Generate CMake project
-        run: cmake -S. -Bbuild -G "Visual Studio 17 2022" -DCMAKE_CONFIGURATION_TYPES=Release
+        run: cmake -S. -Bbuild -G "Visual Studio 17 2022" -DCMAKE_CONFIGURATION_TYPES=RelWithDebInfo
 
       - name: Build 64bit release DLL
-        run: cmake --build build --config Release --target ALL_BUILD
+        run: cmake --build build --config Release --target RelWithDebInfo
 
       - name: Rename ASI to CLS-dev-{GITHUB_SHA}.asi
         run: ren CLS.asi CLS-dev-${{github.sha}}.asi
@@ -30,3 +30,8 @@ jobs:
         with:
           name: binary-MSVC
           path: build/Release/CLS-dev-*.asi
+      - name: Upload Artifact (pdb)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdb-MSVC
+          path: build/CLS.pdb
