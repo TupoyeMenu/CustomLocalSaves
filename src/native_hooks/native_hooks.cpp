@@ -157,10 +157,6 @@ namespace big
 
 		LOGIF(VERBOSE, g.enable_debug_logs, "Registered native detours.");
 
-		for (auto& entry : *g_pointers->m_script_program_table)
-			if (entry.m_program)
-				hook_program(entry.m_program);
-
 		g_native_hooks = this;
 	}
 
