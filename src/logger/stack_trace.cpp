@@ -37,8 +37,6 @@ namespace big
 
 		m_dump << exception_code_to_string(totally_not_exception_info->ExceptionRecord->ExceptionCode) << '\n';
 
-		if (g.in_script_vm)
-			dump_script_info();
 		dump_module_info();
 		dump_registers();
 		dump_stacktrace();
@@ -166,13 +164,6 @@ namespace big
 
 			m_dump << HEX_TO_UPPER(addr);
 		}
-	}
-
-	void stack_trace::dump_script_info()
-	{
-		m_dump << "Currently executing script: " << CROSS_CLASS_ACCESS(rage::tlsContext, rage_enhanced::tlsContext, rage::tlsContext::get(), ->m_script_thread->m_name) << '\n';
-		m_dump << "Thread program counter (could be inaccurate): "
-		       << m_totally_not_exception_info->ContextRecord->Rdi - m_totally_not_exception_info->ContextRecord->Rsi << '\n';
 	}
 
 	void stack_trace::dump_cpp_exception()
