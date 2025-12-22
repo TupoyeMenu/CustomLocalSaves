@@ -155,8 +155,6 @@ namespace big
 		add_native_detour(0x158C16F5E4CF41F8, all_scripts::RETURN_TRUE);  // NETWORK_CASINO_CAN_BET
 		add_native_detour(0x930DE22F07B1CCE3, all_scripts::RETURN_FALSE); // SC_PROFANITY_GET_STRING_STATUS
 
-		LOGIF(VERBOSE, g.enable_debug_logs, "Registered native detours.");
-
 		g_native_hooks = this;
 	}
 
@@ -173,8 +171,6 @@ namespace big
 
 	void native_hooks::add_native_detour(rage::joaat_t script_hash, rage::scrNativeHash hash, rage::scrNativeHandler detour)
 	{
-		LOGIF(VERBOSE, g.enable_debug_logs, "Adding native detour for script({}), native({}).", script_hash, hash);
-
 		if (const auto& it = m_native_registrations.find(script_hash); it != m_native_registrations.end())
 		{
 			it->second.emplace_back(hash, detour);
@@ -188,8 +184,6 @@ namespace big
 	{
 		std::unordered_map<rage::scrNativeHash, rage::scrNativeHandler> native_replacements;
 		const auto script_hash = program->m_name_hash;
-
-		LOGIF(VERBOSE, g.enable_debug_logs, "Hooked script 0x{:X}.", program->m_name_hash);
 
 		// Functions that need to be detoured for all scripts
 		if (const auto& pair = m_native_registrations.find(ALL_SCRIPT_HASH); pair != m_native_registrations.end())
