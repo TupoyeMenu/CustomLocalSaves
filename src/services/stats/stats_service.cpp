@@ -545,9 +545,9 @@ namespace big
 			}
 		}
 
-		int last_character = g_stats_service->get_stat_by_hash(RAGE_JOAAT("MPPLY_LAST_MP_CHAR"))->GetIntData();
 		save_internal_stats_to_json(0);
-		save_internal_stats_to_json(last_character + 1);
+		save_internal_stats_to_json(1);
+		save_internal_stats_to_json(2);
 
 		save_script_data_to_json();
 	}
