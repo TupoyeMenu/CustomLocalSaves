@@ -27,6 +27,7 @@ namespace big
 		rage::scrNativeRegistrationTable* m_native_registration_table{};
 
 		rage::atArray<rage::scrThread*>* m_script_threads{};
+		rage::scrProgram** m_script_programs{};
 		functions::run_script_threads_t m_run_script_threads{};
 		std::int64_t** m_script_globals{};
 		PVOID m_init_native_tables{};

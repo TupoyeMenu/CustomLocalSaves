@@ -155,6 +155,15 @@ namespace big
 		add_native_detour(0x158C16F5E4CF41F8, all_scripts::RETURN_TRUE);  // NETWORK_CASINO_CAN_BET
 		add_native_detour(0x930DE22F07B1CCE3, all_scripts::RETURN_FALSE); // SC_PROFANITY_GET_STRING_STATUS
 
+		for (int i = 0; i < 176; i++)
+		{
+			rage::scrProgram* program = g_pointers->m_script_programs[i];
+			if (program != nullptr && program->m_code_blocks && program->m_code_size)
+			{
+				hook_program(program);
+			}
+		}
+
 		g_native_hooks = this;
 	}
 
