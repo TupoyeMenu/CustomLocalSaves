@@ -17,7 +17,9 @@ namespace big
 		~pointers();
 
 	public:
+#ifdef ENABLE_GUI
 		HWND m_hwnd{};
+#endif
 
 		eGameState* m_game_state{};
 

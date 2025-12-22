@@ -197,10 +197,12 @@ namespace big
 
 		main_batch.run(memory::module(nullptr));
 
+#ifdef ENABLE_GUI
 		LPCWSTR lpClassName = g_is_enhanced ? L"sgaWindow" : L"grcWindow";
 		m_hwnd              = FindWindowW(lpClassName, nullptr);
 		if (!m_hwnd)
 			throw std::runtime_error("Failed to find the game's window.");
+#endif
 
 		g_pointers = this;
 	}
