@@ -143,6 +143,11 @@ namespace big
 
 	inline uint8_t get_char_index_from_stat(sStatData* stat)
 	{
+		if (stat == nullptr)
+		{
+			LOG(FATAL) << "stat is nullptr wtf?";
+			return 0;
+		}
 		uint8_t index = stat->m_flags >> 0x14 & 7;
 		return index == 6 || index == 7 ? 0 : index;
 	}
@@ -183,36 +188,34 @@ namespace big
 	template<typename T>
 	void stats_service::load_stat_map_from_json_modern(const nlohmann::json& json, T& map, bool use_stat_names)
 	{
-		if (use_stat_names)
+		for (const auto& stat : json.items())
 		{
-			for (const auto& stat : json.items())
+			Hash stat_hash = use_stat_names ? rage::joaat(stat.key()) : std::stoul(stat.key());
+
+			if (get_stat_by_hash(stat_hash))
 			{
-				map[rage::joaat(stat.key())] = stat.value();
+				map[stat_hash] = stat.value();
 			}
-		}
-		else
-		{
-			for (const auto& stat : json.items())
+			else
 			{
-				map[std::stoul(stat.key())] = stat.value();
+				LOGF(WARNING, "Detected invalid stat in save ({}), ignoring it.", stat.key());
 			}
 		}
 	}
 	template<typename T>
 	void stats_service::load_stat_map_from_json_legacy(const nlohmann::json& json, T& map, bool use_stat_names)
 	{
-		if (use_stat_names)
+		for (const auto& stat : json)
 		{
-			for (const auto& stat : json)
+			Hash stat_hash = use_stat_names ? rage::joaat(stat[0]) : stat[0].get<Hash>();
+
+			if (get_stat_by_hash(stat_hash))
 			{
-				map[rage::joaat(stat[0])] = stat[1];
+				map[stat_hash] = stat[1];
 			}
-		}
-		else
-		{
-			for (const auto& stat : json)
+			else
 			{
-				map[stat[0]] = stat[1];
+				LOGF(WARNING, "Detected invalid stat in save ({}), ignoring it.", stat_hash);
 			}
 		}
 	}
