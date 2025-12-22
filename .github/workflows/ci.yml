@@ -23,13 +23,13 @@ jobs:
 
       - name: Rename ASI to CLS-dev-{GITHUB_SHA}.asi
         run: ren CLS.asi CLS-dev-${{github.sha}}.asi
-        working-directory: build/Release/
+        working-directory: build/
 
-      - name: Upload Artifact
+      - name: Upload Artifact (asi)
         uses: actions/upload-artifact@v4
         with:
           name: binary-MSVC
-          path: build/Release/CLS-dev-*.asi
+          path: build/CLS-dev-*.asi
 
       - name: Upload Artifact (pdb)
         uses: actions/upload-artifact@v4
