@@ -37,8 +37,8 @@ namespace big
 
 	public:
 		bool save_unmodified_stats = false;
-		bool use_human_readable_stat_names = false;
-		bool load_fsl_files = false;
+		bool use_human_readable_stat_names = true;
+		bool load_fsl_files = true;
 		bool no_rgs = false;
 		bool enable_debug_logs = false;
 
