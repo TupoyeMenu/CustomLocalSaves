@@ -177,6 +177,8 @@ namespace big
 
 	void native_hooks::add_native_detour(rage::joaat_t script_hash, rage::scrNativeHash hash, rage::scrNativeHandler detour)
 	{
+		LOGIF(VERBOSE, g.enable_debug_logs, "Adding native detour for script({}), native({}).", script_hash, hash);
+
 		if (const auto& it = m_native_registrations.find(script_hash); it != m_native_registrations.end())
 		{
 			it->second.emplace_back(hash, detour);
