@@ -54,11 +54,11 @@ namespace big
 			m_run_script_threads = ptr.sub(0xA).as<functions::run_script_threads_t>();
 		});
 
-		main_batch.add("Script programs", "48 8B 1D ? ? ? ? 41 83 F8 FF", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_script_program_table = ptr.add(3).rip().as<decltype(m_script_program_table)>();
+		main_batch.add("Script programs", "48 89 01 48 8D 0D ? ? ? ? E8 ? ? ? ? 8B", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
+			m_script_programs = ptr.add(6).rip().add(0xD8).as<decltype(m_script_programs)>();
 		});
-		main_batch.add("Script programs", "89 46 38 48 8B 0D ? ? ? ? 0F", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
-			m_script_program_table = ptr.add(0x16).rip().as<decltype(m_script_program_table)>();
+		main_batch.add("Script programs", "48 C7 84 C8 D8 00 00 00 00 00 00 00", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_script_programs = ptr.add(0x13).add(3).rip().add(0xD8).as<decltype(m_script_programs)>();
 		});
 
 		main_batch.add("Script globals", "48 8D 15 ? ? ? ? 4C 8B C0 E8 ? ? ? ? 48 85 FF 48 89 1D", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
