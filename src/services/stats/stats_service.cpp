@@ -5,6 +5,7 @@
 #include "gta/stat.hpp"
 #include "pointers.hpp"
 
+#include <chrono>
 #include <cstddef>
 
 namespace big
@@ -141,33 +142,22 @@ namespace big
 		pso_file.read(buf, size);
 	}
 
-	inline uint8_t get_char_index_from_stat(sStatData* stat)
-	{
-		if (stat == nullptr)
-		{
-			LOG(FATAL) << "stat is nullptr wtf?";
-			return 0;
-		}
-		uint8_t index = stat->m_flags >> 0x14 & 7;
-		return index == 6 || index == 7 ? 0 : index;
-	}
-
 	template<typename T>
 	void stats_service::save_stat_map_to_json(nlohmann::json& json, T& map, bool use_stat_names, uint8_t char_index)
 	{
 		auto stats = nlohmann::json::object();
-		for (auto stat : map)
+		for (const auto& stat : map)
 		{
-			if (get_char_index_from_stat(get_stat_by_hash(stat.first)) != char_index)
+			if (stat.second.m_character_index != char_index)
 				continue;
 
 			if (use_stat_names)
 			{
-				stats[m_stat_hash_to_string[stat.first]] = stat.second;
+				stats[m_stat_hash_to_string[stat.first]] = stat.second.data;
 			}
 			else
 			{
-				stats[std::to_string(stat.first)] = stat.second;
+				stats[std::to_string(stat.first)] = stat.second.data;
 			}
 		}
 		json = stats;
@@ -192,9 +182,10 @@ namespace big
 		{
 			Hash stat_hash = use_stat_names ? rage::joaat(stat.key()) : std::stoul(stat.key());
 
-			if (get_stat_by_hash(stat_hash))
+			sStatData* stat_ptr = get_stat_by_hash(stat_hash);
+			if (stat_ptr != nullptr)
 			{
-				map[stat_hash] = stat.value();
+				map[stat_hash] = {stat.value(), stat_ptr->GetCharIndex()};
 			}
 			else
 			{
@@ -209,9 +200,10 @@ namespace big
 		{
 			Hash stat_hash = use_stat_names ? rage::joaat(stat[0]) : stat[0].get<Hash>();
 
-			if (get_stat_by_hash(stat_hash))
+			sStatData* stat_ptr = get_stat_by_hash(stat_hash);
+			if (stat_ptr != nullptr)
 			{
-				map[stat_hash] = stat[1];
+				map[stat_hash] = {stat[1], stat_ptr->GetCharIndex()};
 			}
 			else
 			{
@@ -457,6 +449,8 @@ namespace big
 
 	void stats_service::save_stats()
 	{
+		std::chrono::time_point start_time = std::chrono::high_resolution_clock::now();
+
 		const auto& stats = *g_pointers->m_stats;
 		for (const auto& stat : stats)
 		{
@@ -471,72 +465,72 @@ namespace big
 			{
 			case eStatType::INT:
 			{
-				m_int_stats[stat.m_hash] = stat.m_stat->GetIntData();
+				m_int_stats[stat.m_hash] = {stat.m_stat->GetIntData(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::FLOAT:
 			{
-				m_float_stats[stat.m_hash] = stat.m_stat->GetFloatData();
+				m_float_stats[stat.m_hash] = {stat.m_stat->GetFloatData(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::STRING:
 			{
-				m_string_stats[stat.m_hash] = std::string(stat.m_stat->GetStringData());
+				m_string_stats[stat.m_hash] = {std::string(stat.m_stat->GetStringData()), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::BOOL_:
 			{
-				m_bool_stats[stat.m_hash] = stat.m_stat->GetBoolData();
+				m_bool_stats[stat.m_hash] = {stat.m_stat->GetBoolData(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::UINT8:
 			{
-				m_uint8_stats[stat.m_hash] = stat.m_stat->GetUint8Data();
+				m_uint8_stats[stat.m_hash] = {stat.m_stat->GetUint8Data(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::UINT16:
 			{
-				m_uint16_stats[stat.m_hash] = stat.m_stat->GetUint16Data();
+				m_uint16_stats[stat.m_hash] = {stat.m_stat->GetUint16Data(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::UINT32:
 			{
-				m_uint32_stats[stat.m_hash] = stat.m_stat->GetUint32Data();
+				m_uint32_stats[stat.m_hash] = {stat.m_stat->GetUint32Data(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::UINT64:
 			{
-				m_uint64_stats[stat.m_hash] = stat.m_stat->GetUint64Data();
+				m_uint64_stats[stat.m_hash] = {stat.m_stat->GetUint64Data(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::INT64:
 			{
-				m_int64_stats[stat.m_hash] = stat.m_stat->GetInt64Data();
+				m_int64_stats[stat.m_hash] = {stat.m_stat->GetInt64Data(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::DATE:
 			{
-				m_date_stats[stat.m_hash] = stat.m_stat->GetUint64Data();
+				m_date_stats[stat.m_hash] = {stat.m_stat->GetUint64Data(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::POS:
 			{
-				m_pos_stats[stat.m_hash] = stat.m_stat->GetUint64Data();
+				m_pos_stats[stat.m_hash] = {stat.m_stat->GetUint64Data(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::TEXTLABEL:
 			{
-				m_textlabel_stats[stat.m_hash] = stat.m_stat->GetIntData();
+				m_textlabel_stats[stat.m_hash] = {stat.m_stat->GetIntData(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::PACKED:
 			{
-				m_packed_stats[stat.m_hash] = stat.m_stat->GetUint64Data();
+				m_packed_stats[stat.m_hash] = {stat.m_stat->GetUint64Data(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::USERID:
 			{
-				m_userid_stats[stat.m_hash] = stat.m_stat->GetUint64Data();
+				m_userid_stats[stat.m_hash] = {stat.m_stat->GetUint64Data(), stat.m_stat->GetCharIndex()};
 				break;
 			}
 			case eStatType::PROFILE_SETTING: break;
@@ -553,10 +547,14 @@ namespace big
 		save_internal_stats_to_json(2);
 
 		save_script_data_to_json();
+
+		std::chrono::time_point end_time = std::chrono::high_resolution_clock::now();
+		LOGIF(VERBOSE, g.enable_debug_logs, "Saving took {:%S}", std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time));
 	}
 
 	bool stats_service::load_stats()
 	{
+		std::chrono::time_point start_time = std::chrono::high_resolution_clock::now();
 		if (!load_internal_stats_from_json(0))
 		{
 			return false;
@@ -579,85 +577,85 @@ namespace big
 			case eStatType::INT:
 			{
 				if (m_int_stats.contains(stat.m_hash))
-					stat.m_stat->SetIntData(m_int_stats[stat.m_hash]);
+					stat.m_stat->SetIntData(m_int_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::FLOAT:
 			{
 				if (m_float_stats.contains(stat.m_hash))
-					stat.m_stat->SetFloatData(m_float_stats[stat.m_hash]);
+					stat.m_stat->SetFloatData(m_float_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::STRING:
 			{
 				if (m_string_stats.contains(stat.m_hash))
-					strncpy(((sSubStatData<char[32]>*)stat.m_stat)->m_data, m_string_stats[stat.m_hash].data(), 32);
+					strncpy(((sSubStatData<char[32]>*)stat.m_stat)->m_data, m_string_stats[stat.m_hash].data.data(), 32);
 				break;
 			}
 			case eStatType::BOOL_:
 			{
 				if (m_bool_stats.contains(stat.m_hash))
-					stat.m_stat->SetBoolData(m_bool_stats[stat.m_hash]);
+					stat.m_stat->SetBoolData(m_bool_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::UINT8:
 			{
 				if (m_uint8_stats.contains(stat.m_hash))
-					stat.m_stat->SetUint8Data(m_uint8_stats[stat.m_hash]);
+					stat.m_stat->SetUint8Data(m_uint8_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::UINT16:
 			{
 				if (m_uint16_stats.contains(stat.m_hash))
-					stat.m_stat->SetUint16Data(m_uint16_stats[stat.m_hash]);
+					stat.m_stat->SetUint16Data(m_uint16_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::UINT32:
 			{
 				if (m_uint32_stats.contains(stat.m_hash))
-					stat.m_stat->SetUint32Data(m_uint32_stats[stat.m_hash]);
+					stat.m_stat->SetUint32Data(m_uint32_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::UINT64:
 			{
 				if (m_uint64_stats.contains(stat.m_hash))
-					stat.m_stat->SetUint64Data(m_uint64_stats[stat.m_hash]);
+					stat.m_stat->SetUint64Data(m_uint64_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::INT64:
 			{
 				if (m_int64_stats.contains(stat.m_hash))
-					stat.m_stat->SetInt64Data(m_int64_stats[stat.m_hash]);
+					stat.m_stat->SetInt64Data(m_int64_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::DATE:
 			{
 				if (m_date_stats.contains(stat.m_hash))
-					stat.m_stat->SetUint64Data(m_date_stats[stat.m_hash]);
+					stat.m_stat->SetUint64Data(m_date_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::POS:
 			{
 				if (m_pos_stats.contains(stat.m_hash))
-					stat.m_stat->SetUint64Data(m_pos_stats[stat.m_hash]);
+					stat.m_stat->SetUint64Data(m_pos_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::TEXTLABEL:
 			{
 				if (m_textlabel_stats.contains(stat.m_hash))
-					stat.m_stat->SetIntData(m_textlabel_stats[stat.m_hash]);
+					stat.m_stat->SetIntData(m_textlabel_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::PACKED:
 			{
 				if (m_packed_stats.contains(stat.m_hash))
-					stat.m_stat->SetUint64Data(m_packed_stats[stat.m_hash]);
+					stat.m_stat->SetUint64Data(m_packed_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::USERID:
 			{
 				if (m_userid_stats.contains(stat.m_hash))
-					stat.m_stat->SetUint64Data(m_userid_stats[stat.m_hash]);
+					stat.m_stat->SetUint64Data(m_userid_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::PROFILE_SETTING: break;
@@ -674,6 +672,9 @@ namespace big
 				stat.m_stat->SetIntData(1);
 			}
 		}
+
+		std::chrono::time_point end_time = std::chrono::high_resolution_clock::now();
+		LOGIF(VERBOSE, g.enable_debug_logs, "Loading took {:%S}", std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time));
 		return true;
 	}
 }
