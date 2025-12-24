@@ -150,7 +150,7 @@ namespace big
 		void save_internal_stats_to_json(uint8_t char_index = 0);
 		bool load_internal_stats_from_json(uint8_t char_index = 0);
 
-		bool load_internal_script_data_from_json();
+		bool load_script_data();
 
 		template<typename T>
 		void save_stat_map_to_json(nlohmann::json& json, T& map, bool use_stat_names, uint8_t char_index);

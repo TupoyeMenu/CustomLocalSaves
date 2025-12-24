@@ -394,7 +394,6 @@ namespace big
 
 		try
 		{
-			// Ignore comments for save_overwrite.json
 			const nlohmann::json& json          = nlohmann::json::parse(file, nullptr, true, /*ignore_comments*/ true);
 			bool uses_human_readable_stat_names = json["uses_human_readable_stat_names"];
 			load_stat_map_from_json(json["INT"], m_int_stats, uses_human_readable_stat_names);
@@ -422,7 +421,7 @@ namespace big
 		return false;
 	}
 
-	bool stats_service::load_internal_script_data_from_json()
+	bool stats_service::load_script_data()
 	{
 		if (!m_save_file_script.exists())
 		{
@@ -560,14 +559,12 @@ namespace big
 			return false;
 		}
 
-		// Load character stats if they exist.
 		load_internal_stats_from_json(1);
 		load_internal_stats_from_json(2);
 
-		// Load stat overrides last.
 		load_internal_stats_from_json(SAVE_OVERWRITE_INDEX);
 
-		load_internal_script_data_from_json();
+		load_script_data();
 
 		const auto& stats = *g_pointers->m_stats;
 		for (const auto& stat : stats)
