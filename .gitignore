@@ -7,6 +7,9 @@
 build/
 docs/
 
+# generated files
+version.cpp
+
 # precompiled headers
 *.ipch
 *.gch
