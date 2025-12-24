@@ -20,6 +20,8 @@ include(cmake/json.cmake)
 message("\nFetching custom modules")
 include(cmake/gtav-classes.cmake)
 
+include(cmake/git.cmake)
+
 # BigBaseV2
 message(STATUS ${CMAKE_PROJECT_NAME})
 file(GLOB_RECURSE SRC_MAIN

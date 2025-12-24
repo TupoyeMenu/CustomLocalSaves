@@ -15,6 +15,7 @@
 #include "services/stats/stats_service.hpp"
 #include "thread_pool.hpp"
 #include "util/is_enhanced.hpp"
+#include "version.hpp"
 
 #ifdef ENABLE_EXCEPTION_HANDLER
 	#include "logger/exception_handler.hpp"
@@ -58,6 +59,8 @@ BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
 			    );
 			    try
 			    {
+				    LOGF(INFO, "Git Info\n\tBranch:\t{}\n\tHash:\t{}\n\tDate:\t{}", version::GIT_BRANCH, version::GIT_SHA1, version::GIT_DATE);
+
 				    auto thread_pool_instance = std::make_unique<thread_pool>();
 				    LOGF(INFO, "Thread pool initialized.");
 
