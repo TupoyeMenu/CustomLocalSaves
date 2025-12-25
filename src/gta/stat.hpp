@@ -54,6 +54,12 @@ public:
 	virtual void _29()                           = 0;
 	virtual bool IsZero()                        = 0;
 
+	uint8_t GetCharIndex()
+	{
+		uint8_t index = m_flags >> 0x14 & 7;
+		return index == 6 || index == 7 ? 0 : index;
+	}
+
 	uint64_t m_flags;
 };
 

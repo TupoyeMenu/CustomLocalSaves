@@ -114,13 +114,12 @@ namespace big
 		void do_visit(const Ptr& ptr, const Fnc& fnc);
 	};
 
-	class sCustomStat
+	template <typename T>
+	class sSmallStat
 	{
 	public:
-		sStatData* m_stat;
-		bool m_is_character;
+		T data;
 		uint8_t m_character_index;
-		bool m_is_online;
 	};
 
 	class stats_service
@@ -151,7 +150,7 @@ namespace big
 		void save_internal_stats_to_json(uint8_t char_index = 0);
 		bool load_internal_stats_from_json(uint8_t char_index = 0);
 
-		bool load_internal_script_data_from_json();
+		bool load_script_data();
 
 		template<typename T>
 		void save_stat_map_to_json(nlohmann::json& json, T& map, bool use_stat_names, uint8_t char_index);
@@ -166,20 +165,20 @@ namespace big
 		void load_script_data_from_json(const nlohmann::json& json);
 		void save_script_data_to_json();
 
-		std::unordered_map<Hash, int> m_int_stats;
-		std::unordered_map<Hash, float> m_float_stats;
-		std::unordered_map<Hash, std::string> m_string_stats;
-		std::unordered_map<Hash, bool> m_bool_stats;
-		std::unordered_map<Hash, uint8_t> m_uint8_stats;
-		std::unordered_map<Hash, uint16_t> m_uint16_stats;
-		std::unordered_map<Hash, uint32_t> m_uint32_stats;
-		std::unordered_map<Hash, uint64_t> m_uint64_stats;
-		std::unordered_map<Hash, int64_t> m_int64_stats;
-		std::unordered_map<Hash, uint64_t> m_date_stats;
-		std::unordered_map<Hash, uint64_t> m_pos_stats;
-		std::unordered_map<Hash, int> m_textlabel_stats;
-		std::unordered_map<Hash, int64_t> m_packed_stats;
-		std::unordered_map<Hash, int64_t> m_userid_stats;
+		std::unordered_map<Hash, sSmallStat<int>> m_int_stats;
+		std::unordered_map<Hash, sSmallStat<float>> m_float_stats;
+		std::unordered_map<Hash, sSmallStat<std::string>> m_string_stats;
+		std::unordered_map<Hash, sSmallStat<bool>> m_bool_stats;
+		std::unordered_map<Hash, sSmallStat<uint8_t>> m_uint8_stats;
+		std::unordered_map<Hash, sSmallStat<uint16_t>> m_uint16_stats;
+		std::unordered_map<Hash, sSmallStat<uint32_t>> m_uint32_stats;
+		std::unordered_map<Hash, sSmallStat<uint64_t>> m_uint64_stats;
+		std::unordered_map<Hash, sSmallStat<int64_t>> m_int64_stats;
+		std::unordered_map<Hash, sSmallStat<uint64_t>> m_date_stats;
+		std::unordered_map<Hash, sSmallStat<uint64_t>> m_pos_stats;
+		std::unordered_map<Hash, sSmallStat<int>> m_textlabel_stats;
+		std::unordered_map<Hash, sSmallStat<uint64_t>> m_packed_stats;
+		std::unordered_map<Hash, sSmallStat<uint64_t>> m_userid_stats;
 
 		std::unordered_map<Hash, std::string> m_stat_hash_to_string;
 
