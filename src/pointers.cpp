@@ -195,6 +195,13 @@ namespace big
 			m_construct_basket = ptr.sub(10).as<PVOID>();
 		});
 
+		main_batch.add("Has Privilege", "76 ? BA 05 00 00 00 E8", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
+			m_has_privilege = ptr.add(8).rip().as<PVOID>();
+		});
+		main_batch.add("Has Privilege", "BA 1B 00 00 00 E8 ? ? ? ? EB", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_has_privilege = ptr.add(6).rip().as<PVOID>();
+		});
+
 		main_batch.run(memory::module(nullptr));
 
 		LPCWSTR lpClassName = g_is_enhanced ? L"sgaWindow" : L"grcWindow";
