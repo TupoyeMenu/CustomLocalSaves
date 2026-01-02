@@ -34,6 +34,7 @@ namespace big
 		{
 			detour_hook_helper::add<hooks::network_can_access_multiplayer>("Network Can Access Multiplayer", (void*)g_pointers->m_network_can_access_multiplayer);
 		}
+		detour_hook_helper::add<hooks::has_privilege>("Has Privilege", (void*)g_pointers->m_has_privilege);
 
 		detour_hook_helper::add<hooks::create_stat>("Create Stat", (void*)g_pointers->m_create_stat);
 		detour_hook_helper::add<hooks::mp_stats_save>("MP Stats Save", (void*)g_pointers->m_mp_stats_save);

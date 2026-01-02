@@ -44,7 +44,6 @@ namespace big
 		PVOID m_profile_stats_save;
 
 		PVOID m_network_can_access_multiplayer;
-		bool m_network_can_access_multiplayer_already_hooked = false;
 
 		PVOID m_create_stat;
 		PVOID m_stat_dtor;
@@ -61,6 +60,8 @@ namespace big
 		PVOID m_construct_basket;
 		functions::spend_money m_spend_money;
 		functions::earn_money m_earn_money;
+
+		PVOID m_has_privilege;
 	};
 
 	inline pointers* g_pointers{};
