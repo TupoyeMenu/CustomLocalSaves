@@ -19,18 +19,13 @@ namespace big
 	public:
 		HWND m_hwnd{};
 
-		eGameState* m_game_state{};
-
 		CPedFactory** m_ped_factory{};
 		CNetworkPlayerMgr** m_network_player_mgr{};
 
-		rage::scrNativeRegistrationTable* m_native_registration_table{};
-
 		rage::atArray<rage::scrThread*>* m_script_threads{};
-		rage::scrProgram** m_script_programs{};
 		functions::run_script_threads_t m_run_script_threads{};
 		std::int64_t** m_script_globals{};
-		PVOID m_init_native_tables{};
+		PVOID m_create_native{};
 
 		memory::byte_patch* m_skip_money_check1;
 		memory::byte_patch* m_skip_money_check2;

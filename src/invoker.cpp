@@ -18,38 +18,14 @@ namespace big
 		m_args         = &m_arg_stack[0];
 	}
 
-	void native_invoker::cache_handlers()
+	void native_invoker::add_native_handler(rage::scrNativeHash hash, rage::scrNativeHandler handler)
 	{
-		if (m_handlers_cached) [[likely]]
-			return;
-
-		size_t i = 0;
-		for (const rage::scrNativePair& mapping : g_crossmap)
-		{
-			m_handler_cache[i] = (rage::scrNativeHandler)mapping.second;
-			++i;
-		}
-		auto program = reinterpret_cast<rage::scrProgram*>(calloc(1, sizeof(rage::scrProgram)));
-		program->m_native_count = m_handler_cache.size();
-		program->m_native_entrypoints = m_handler_cache.data();
-		g_hooking->get_original<hooks::init_native_tables>()(program);
-		free(program);
-
-		m_handlers_cached = true;
+		m_handler_cache[hash] = handler;
 	}
 
 	rage::scrNativeHandler native_invoker::get_native_handler(rage::scrNativeHash hash)
 	{
-		cache_handlers();
-
-		size_t i = 0;
-		for (const rage::scrNativePair& mapping : g_crossmap)
-		{
-			if(mapping.second == hash) break;
-			++i;
-		}
-
-		return m_handler_cache[i];
+		return m_handler_cache[hash];
 	}
 
 	void fix_vectors(native_call_context& call_context)
@@ -71,16 +47,9 @@ namespace big
 
 	void native_invoker::end_call(rage::scrNativeHash hash)
 	{
-		size_t i = 0;
-		for (const rage::scrNativePair& mapping : g_crossmap)
-		{
-			if(mapping.first == hash) break;
-			++i;
-		}
-
 		try
 		{
-			rage::scrNativeHandler handler = m_handler_cache.at(i);
+			rage::scrNativeHandler handler = m_handler_cache.at(hash);
 
 			// return address checks are no longer a thing
 			handler(&m_call_context);
