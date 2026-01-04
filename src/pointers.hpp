@@ -31,6 +31,7 @@ namespace big
 		functions::run_script_threads_t m_run_script_threads{};
 		std::int64_t** m_script_globals{};
 		PVOID m_init_native_tables{};
+		PVOID m_create_native{};
 
 		memory::byte_patch* m_skip_money_check1;
 		memory::byte_patch* m_skip_money_check2;

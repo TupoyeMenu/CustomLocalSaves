@@ -70,6 +70,13 @@ namespace big
 
 		// CLS signatures
 
+		main_batch.add("Create Native", "BD C3 9E 26 00 48 8D", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
+			m_create_native = ptr.sub(0x1E).as<PVOID>();
+		});
+		main_batch.add("Create Native", "4A 8B 34 E9 48", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_create_native = ptr.sub(0x1C).as<PVOID>();
+		});
+
 		main_batch.add("SkipMoneyCheck1", "84 C0 0F 85 93 01 00 00 48", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_skip_money_check1 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x48, 0xE9}).get();
 			m_earn_money = ptr.sub(0x2D).as<functions::earn_money>();
