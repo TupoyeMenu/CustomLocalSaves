@@ -17,7 +17,9 @@ namespace big
 		~pointers();
 
 	public:
+#ifdef ENABLE_GUI
 		HWND m_hwnd{};
+#endif
 
 		CPedFactory** m_ped_factory{};
 		CNetworkPlayerMgr** m_network_player_mgr{};
