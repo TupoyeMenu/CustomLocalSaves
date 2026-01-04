@@ -19,7 +19,11 @@ namespace big
 		}
 		g_native_invoker.add_native_handler(community_hash, native_handler);
 
-		//LOGF(VERBOSE, "{{{:#018X}, {:#018X}}},", community_hash, native_hash);
+		auto hooked_handler = g_native_hooks->get_hooked_handler(community_hash);
+		if (hooked_handler.has_value())
+		{
+			native_handler = hooked_handler.value();
+		}
 
 		g_hooking->get_original<hooks::create_native>()(a1, native_hash, native_handler);
 	}

@@ -12,7 +12,6 @@ namespace big
 	struct hooks
 	{
 		static bool run_script_threads(std::uint32_t ops_to_execute);
-		static bool init_native_tables(rage::scrProgram* program);
 
 		static uint32_t network_can_access_multiplayer(uint32_t a1, uint64_t* a2);
 		static void create_native(void* a1, rage::scrNativeHash native_hash, rage::scrNativeHandler native_func);

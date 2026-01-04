@@ -49,7 +49,7 @@ namespace big
 	{
 		try
 		{
-			rage::scrNativeHandler handler = m_handler_cache[hash];
+			rage::scrNativeHandler handler = m_handler_cache.at(hash);
 
 			// return address checks are no longer a thing
 			handler(&m_call_context);
