@@ -551,107 +551,110 @@ namespace big
 		LOGIF(VERBOSE, g.enable_debug_logs, "Saving took {:%S}", std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time));
 	}
 
-	bool stats_service::load_stats()
+	bool stats_service::load_stats(uint8_t char_index)
 	{
 		std::chrono::time_point start_time = std::chrono::high_resolution_clock::now();
-		if (!load_internal_stats_from_json(0))
+		if (!load_internal_stats_from_json(char_index))
 		{
 			return false;
 		}
 
-		load_internal_stats_from_json(1);
-		load_internal_stats_from_json(2);
-
 		load_internal_stats_from_json(SAVE_OVERWRITE_INDEX);
-
-		load_script_data();
+		
+		if (char_index != 0)
+		{
+			load_script_data();
+		}
 
 		const auto& stats = *g_pointers->m_stats;
 		for (const auto& stat : stats)
 		{
+			if (stat.m_stat->GetCharIndex() != char_index)
+				continue;
+
 			switch (stat.m_stat->GetTypeId())
 			{
 			case eStatType::INT:
 			{
-				if (m_int_stats.contains(stat.m_hash))
+				if (m_int_stats.contains(stat.m_hash) && m_int_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetIntData(m_int_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::FLOAT:
 			{
-				if (m_float_stats.contains(stat.m_hash))
+				if (m_float_stats.contains(stat.m_hash) && m_float_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetFloatData(m_float_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::STRING:
 			{
-				if (m_string_stats.contains(stat.m_hash))
+				if (m_string_stats.contains(stat.m_hash) && m_string_stats[stat.m_hash].m_character_index == char_index)
 					strncpy(((sSubStatData<char[32]>*)stat.m_stat)->m_data, m_string_stats[stat.m_hash].data.data(), 32);
 				break;
 			}
 			case eStatType::BOOL_:
 			{
-				if (m_bool_stats.contains(stat.m_hash))
+				if (m_bool_stats.contains(stat.m_hash) && m_bool_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetBoolData(m_bool_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::UINT8:
 			{
-				if (m_uint8_stats.contains(stat.m_hash))
+				if (m_uint8_stats.contains(stat.m_hash) && m_uint8_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetUint8Data(m_uint8_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::UINT16:
 			{
-				if (m_uint16_stats.contains(stat.m_hash))
+				if (m_uint16_stats.contains(stat.m_hash) && m_uint16_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetUint16Data(m_uint16_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::UINT32:
 			{
-				if (m_uint32_stats.contains(stat.m_hash))
+				if (m_uint32_stats.contains(stat.m_hash) && m_uint32_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetUint32Data(m_uint32_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::UINT64:
 			{
-				if (m_uint64_stats.contains(stat.m_hash))
+				if (m_uint64_stats.contains(stat.m_hash) && m_uint64_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetUint64Data(m_uint64_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::INT64:
 			{
-				if (m_int64_stats.contains(stat.m_hash))
+				if (m_int64_stats.contains(stat.m_hash) && m_int64_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetInt64Data(m_int64_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::DATE:
 			{
-				if (m_date_stats.contains(stat.m_hash))
+				if (m_date_stats.contains(stat.m_hash) && m_date_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetUint64Data(m_date_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::POS:
 			{
-				if (m_pos_stats.contains(stat.m_hash))
+				if (m_pos_stats.contains(stat.m_hash) && m_pos_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetUint64Data(m_pos_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::TEXTLABEL:
 			{
-				if (m_textlabel_stats.contains(stat.m_hash))
+				if (m_textlabel_stats.contains(stat.m_hash) && m_textlabel_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetIntData(m_textlabel_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::PACKED:
 			{
-				if (m_packed_stats.contains(stat.m_hash))
+				if (m_packed_stats.contains(stat.m_hash) && m_packed_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetUint64Data(m_packed_stats[stat.m_hash].data);
 				break;
 			}
 			case eStatType::USERID:
 			{
-				if (m_userid_stats.contains(stat.m_hash))
+				if (m_userid_stats.contains(stat.m_hash) && m_userid_stats[stat.m_hash].m_character_index == char_index)
 					stat.m_stat->SetUint64Data(m_userid_stats[stat.m_hash].data);
 				break;
 			}
@@ -671,7 +674,7 @@ namespace big
 		}
 
 		std::chrono::time_point end_time = std::chrono::high_resolution_clock::now();
-		LOGIF(VERBOSE, g.enable_debug_logs, "Loading took {:%S}", std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time));
+		LOGIF(VERBOSE, g.enable_debug_logs, "Loading char_index {} took {:%S}", char_index, std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time));
 		return true;
 	}
 }

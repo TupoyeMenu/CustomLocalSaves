@@ -48,7 +48,7 @@ namespace big
 				break;
 
 			tried_loading = true;
-			json_loaded   = g_stats_service->load_stats();
+			json_loaded   = g_stats_service->load_stats(_this->m_char_slot);
 
 			if (json_loaded)
 			{

@@ -129,7 +129,7 @@ namespace big
 		~stats_service();
 
 		void save_stats();
-		bool load_stats();
+		bool load_stats(uint8_t char_index);
 
 		void register_stat(const char* name);
 
