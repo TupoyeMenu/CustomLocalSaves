@@ -13,7 +13,7 @@ namespace big
 {
 	pointers::pointers()
 	{
-		memory::pattern_batch main_batch;
+		memory::batch main_batch;
 
 		main_batch.add("Game state", "83 3D ? ? ? ? ? 75 17 8B 43 20 25", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_game_state = ptr.add(2).rip().add(1).as<eGameState*>();

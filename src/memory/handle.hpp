@@ -1,3 +1,13 @@
+/**
+ * @file handle.hpp
+ * 
+ * @copyright GNU General Public License Version 2.
+ * This file is part of YimMenu.
+ * YimMenu is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.
+ * YimMenu is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with YimMenu. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #pragma once
 #include <cstddef>
 #include <cstdint>
@@ -12,21 +22,21 @@ namespace memory
 		explicit handle(std::uintptr_t ptr);
 
 		template<typename T>
-		std::enable_if_t<std::is_pointer_v<T>, T> as();
+		std::enable_if_t<std::is_pointer_v<T>, T> as() const;
 
 		template<typename T>
-		std::enable_if_t<std::is_lvalue_reference_v<T>, T> as();
+		std::enable_if_t<std::is_lvalue_reference_v<T>, T> as() const;
 
 		template<typename T>
-		std::enable_if_t<std::is_same_v<T, std::uintptr_t>, T> as();
+		std::enable_if_t<std::is_same_v<T, std::uintptr_t>, T> as() const;
 
 		template<typename T>
-		handle add(T offset);
+		handle add(T offset) const;
 
 		template<typename T>
-		handle sub(T offset);
+		handle sub(T offset) const;
 
-		handle rip();
+		handle rip() const;
 
 		explicit operator bool();
 
@@ -48,36 +58,36 @@ namespace memory
 	}
 
 	template<typename T>
-	inline std::enable_if_t<std::is_pointer_v<T>, T> handle::as()
+	inline std::enable_if_t<std::is_pointer_v<T>, T> handle::as() const
 	{
 		return reinterpret_cast<T>(ptr);
 	}
 
 	template<typename T>
-	inline std::enable_if_t<std::is_lvalue_reference_v<T>, T> handle::as()
+	inline std::enable_if_t<std::is_lvalue_reference_v<T>, T> handle::as() const
 	{
 		return *static_cast<std::add_pointer_t<std::remove_reference_t<T>>>(ptr);
 	}
 
 	template<typename T>
-	inline std::enable_if_t<std::is_same_v<T, std::uintptr_t>, T> handle::as()
+	inline std::enable_if_t<std::is_same_v<T, std::uintptr_t>, T> handle::as() const
 	{
 		return reinterpret_cast<std::uintptr_t>(ptr);
 	}
 
 	template<typename T>
-	inline handle handle::add(T offset)
+	inline handle handle::add(T offset) const
 	{
 		return handle(as<std::uintptr_t>() + offset);
 	}
 
 	template<typename T>
-	inline handle handle::sub(T offset)
+	inline handle handle::sub(T offset) const
 	{
 		return handle(as<std::uintptr_t>() - offset);
 	}
 
-	inline handle handle::rip()
+	inline handle handle::rip() const
 	{
 		return add(as<std::int32_t&>()).add(4);
 	}
