@@ -13,7 +13,7 @@ namespace big
 {
 	pointers::pointers()
 	{
-		memory::pattern_batch main_batch;
+		memory::batch main_batch;
 
 		main_batch.add("Ped factory", "48 8B 05 ? ? ? ? 48 8B 48 08 48 85 C9 74 52 8B 81", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_ped_factory = ptr.add(3).rip().as<CPedFactory**>();
