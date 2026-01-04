@@ -1,18 +1,6 @@
-/**
- * @file native_hooks.cpp
- * @brief Hooks to native functions.
- * 
- * @copyright GNU General Public License Version 2.
- * This file is part of YimMenu.
- * YimMenu is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.
- * YimMenu is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with YimMenu. If not, see <https://www.gnu.org/licenses/>.
- */
-
 #include "native_hooks.hpp"
 
 #include "all_scripts.hpp"
-#include "crossmap.hpp"
 #include "fm_maintain_cloud_header_data.hpp"
 #include "script_save.hpp"
 
@@ -22,8 +10,6 @@
 
 namespace big
 {
-	constexpr auto ALL_SCRIPT_HASH = RAGE_JOAAT("ALL_SCRIPTS");
-
 	native_hooks::native_hooks()
 	{
 		add_native_detour(0x7D2708796355B20B, all_scripts::RETURN_FALSE); // NET_GAMESERVER_USE_SERVER_TRANSACTIONS
@@ -90,7 +76,7 @@ namespace big
 		{
 			return m_native_detours.at(hash);
 		}
-		catch(const std::out_of_range& ex)
+		catch (const std::out_of_range& ex)
 		{
 			return std::nullopt;
 		}
