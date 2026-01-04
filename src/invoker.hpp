@@ -30,7 +30,7 @@ namespace big
 		explicit native_invoker() = default;
 		~native_invoker()         = default;
 
-		void cache_handlers();
+		void add_native_handler(rage::scrNativeHash hash, rage::scrNativeHandler handler);
 		rage::scrNativeHandler get_native_handler(rage::scrNativeHash hash);
 
 		void begin_call();
@@ -55,8 +55,7 @@ namespace big
 
 	public:
 		native_call_context m_call_context;
-		static inline std::array<rage::scrNativeHandler, sizeof(g_crossmap) / sizeof(rage::scrNativePair)> m_handler_cache;
-		bool m_handlers_cached = false;
+		static inline std::unordered_map<rage::scrNativeHash, rage::scrNativeHandler> m_handler_cache;
 	};
 
 	inline native_invoker g_native_invoker;

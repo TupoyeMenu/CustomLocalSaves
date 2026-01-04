@@ -15,13 +15,6 @@ namespace big
 	{
 		memory::batch main_batch;
 
-		main_batch.add("Game state", "83 3D ? ? ? ? ? 75 17 8B 43 20 25", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_game_state = ptr.add(2).rip().add(1).as<eGameState*>();
-		});
-		main_batch.add("Game state", "83 3D ? ? ? ? ? 0F 85 ? ? ? ? BA ? 00", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
-			m_game_state = ptr.add(2).rip().add(1).as<eGameState*>();
-		});
-
 		main_batch.add("Ped factory", "48 8B 05 ? ? ? ? 48 8B 48 08 48 85 C9 74 52 8B 81", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_ped_factory = ptr.add(3).rip().as<CPedFactory**>();
 		});
@@ -36,15 +29,6 @@ namespace big
 			m_network_player_mgr = ptr.add(2).add(3).rip().as<CNetworkPlayerMgr**>();
 		});
 
-		main_batch.add("Native handlers", "48 8D 0D ? ? ? ? 48 8B 14 FA E8 ? ? ? ? 48 85 C0 75 0A", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_init_native_tables        = ptr.sub(37).as<PVOID>();
-			m_native_registration_table = ptr.add(3).rip().as<rage::scrNativeRegistrationTable*>();
-		});
-		main_batch.add("Native handlers", "EB 2A 0F 1F 40 00 48 8B 54 17 10", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
-			m_init_native_tables        = ptr.sub(0x2A).as<PVOID>();
-			m_native_registration_table = ptr.sub(0xE).rip().as<rage::scrNativeRegistrationTable*>();
-		});
-
 		main_batch.add("Script threads", "45 33 F6 8B E9 85 C9 B8", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_script_threads     = ptr.sub(4).rip().sub(8).as<decltype(m_script_threads)>();
 			m_run_script_threads = ptr.sub(0x1F).as<functions::run_script_threads_t>();
@@ -52,13 +36,6 @@ namespace big
 		main_batch.add("Script threads", "BE 40 5D C6 00", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 			m_script_threads     = ptr.add(0x1B).rip().as<decltype(m_script_threads)>();
 			m_run_script_threads = ptr.sub(0xA).as<functions::run_script_threads_t>();
-		});
-
-		main_batch.add("Script programs", "48 89 01 48 8D 0D ? ? ? ? E8 ? ? ? ? 8B", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
-			m_script_programs = ptr.add(6).rip().add(0xD8).as<decltype(m_script_programs)>();
-		});
-		main_batch.add("Script programs", "48 C7 84 C8 D8 00 00 00 00 00 00 00", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
-			m_script_programs = ptr.add(0x13).add(3).rip().add(0xD8).as<decltype(m_script_programs)>();
 		});
 
 		main_batch.add("Script globals", "48 8D 15 ? ? ? ? 4C 8B C0 E8 ? ? ? ? 48 85 FF 48 89 1D", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
@@ -69,6 +46,13 @@ namespace big
 		});
 
 		// CLS signatures
+
+		main_batch.add("Create Native", "BD C3 9E 26 00 48 8D", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
+			m_create_native = ptr.sub(0x1E).as<PVOID>();
+		});
+		main_batch.add("Create Native", "4A 8B 34 E9 48", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_create_native = ptr.sub(0x1C).as<PVOID>();
+		});
 
 		main_batch.add("SkipMoneyCheck1", "84 C0 0F 85 93 01 00 00 48", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_skip_money_check1 = memory::byte_patch::make(ptr.add(2).as<PVOID>(), std::vector{0x48, 0xE9}).get();
