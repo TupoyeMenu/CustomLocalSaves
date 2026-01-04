@@ -1,22 +1,27 @@
 #include "crossmap.hpp"
 #include "hooking/hooking.hpp"
 #include "invoker.hpp"
-#include "logger/logger.hpp"
 #include "native_hooks/native_hooks.hpp"
 
 namespace big
 {
-	void hooks::create_native(void* a1, rage::scrNativeHash native_hash, rage::scrNativeHandler native_handler)
+	rage::scrNativeHash get_community_hash_from_game_hash(rage::scrNativeHash hash)
 	{
-		rage::scrNativeHash community_hash = native_hash;
 		for (const rage::scrNativePair& mapping : g_crossmap)
 		{
-			if (mapping.second == native_hash)
+			if (mapping.second == hash)
 			{
-				community_hash = mapping.first;
-				break;
+				return mapping.first;
 			}
 		}
+
+		return hash;
+	}
+
+	void hooks::create_native(void* a1, rage::scrNativeHash native_hash, rage::scrNativeHandler native_handler)
+	{
+		rage::scrNativeHash community_hash = get_community_hash_from_game_hash(native_hash);
+
 		g_native_invoker.add_native_handler(community_hash, native_handler);
 
 		auto hooked_handler = g_native_hooks->get_hooked_handler(community_hash);
