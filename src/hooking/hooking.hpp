@@ -4,6 +4,7 @@
 #include "gta/fwddec.hpp"
 #include "vmt_hook.hpp"
 
+#include <script/scrNativeHandler.hpp>
 #include <MinHook.h>
 
 namespace big
@@ -11,10 +12,10 @@ namespace big
 	struct hooks
 	{
 		static bool run_script_threads(std::uint32_t ops_to_execute);
-		static bool init_native_tables(rage::scrProgram* program);
 
 		static bool has_privilege(void* p1, uint32_t privilege);
 		static uint32_t network_can_access_multiplayer(uint32_t a1, uint64_t* a2);
+		static void create_native(void* a1, rage::scrNativeHash native_hash, rage::scrNativeHandler native_func);
 
 		static void create_stat(void* p1, const char** name);
 		static bool mp_stats_save(void* _this, uint32_t p2, uint32_t p3, uint32_t p4, uint32_t p5, uint32_t p6);

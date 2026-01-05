@@ -43,10 +43,6 @@ BOOL APIENTRY DllMain(HMODULE hmod, DWORD reason, PVOID)
 #endif
 			    std::srand(std::chrono::system_clock::now().time_since_epoch().count());
 
-			    LPCSTR lpClassName = g_is_enhanced ? "sgaWindow" : "grcWindow";
-			    while (!FindWindow(lpClassName, nullptr))
-				    std::this_thread::sleep_for(1s);
-
 			    std::filesystem::path base_dir = std::getenv("appdata");
 			    base_dir /= PROJECT_NAME;
 			    g_file_manager.init(base_dir);

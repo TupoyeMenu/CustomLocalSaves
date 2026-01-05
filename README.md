@@ -88,13 +88,13 @@ ninja
 ```
 
 ## Credits
-| Credits                                                    |                                                                        |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Pocakking                                                  | [BigBaseV2](https://github.com/Pocakking/BigBaseV2)                    |
-| spankerincrease(gir489)                                    | [BigBaseV2-fix](https://bitbucket.org/gir489/bigbasev2-fix)            |
-| [YimMenu](https://github.com/YimMenu/YimMenu) contributors | Updates for newer GTA V versions, most of the code is stolen from them |
-| FSL                                                        | Saved my save, help with profile stats, help with casino chips         |
-| tupoy-ya                                                   | Being stupid                                                           |
+| Credits                                                    |                                                                                                      |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Pocakking                                                  | [BigBaseV2](https://github.com/Pocakking/BigBaseV2)                                                  |
+| spankerincrease(gir489)                                    | [BigBaseV2-fix](https://bitbucket.org/gir489/bigbasev2-fix)                                          |
+| [YimMenu](https://github.com/YimMenu/YimMenu) contributors | Updates for newer GTA V versions, most of the code is stolen from them                               |
+| FSL                                                        | Saved my save, help with profile stats, help with casino chips, create_native based native hook idea |
+| tupoy-ya                                                   | Being stupid                                                                                         |
 
 ## License
 This project is licensed under [GNU GENERAL PUBLIC LICENSE Version 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt) because i stole a lot of code from YimMenu.

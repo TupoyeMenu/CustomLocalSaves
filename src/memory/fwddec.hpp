@@ -6,5 +6,5 @@ namespace memory
 	class range;
 	class module;
 	class pattern;
-	class pattern_batch;
+	class batch;
 }

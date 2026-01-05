@@ -28,7 +28,7 @@ namespace big
 		}
 
 		detour_hook_helper::add<hooks::run_script_threads>("Script hook", (void*)g_pointers->m_run_script_threads);
-		detour_hook_helper::add<hooks::init_native_tables>("Init Native Tables", (void*)g_pointers->m_init_native_tables);
+		detour_hook_helper::add<hooks::create_native>("Create Native", (void*)g_pointers->m_create_native);
 
 		if(!g_is_enhanced)
 		{
@@ -113,8 +113,6 @@ namespace big
 
 	bool hooks::run_script_threads(std::uint32_t ops_to_execute)
 	{
-		g_native_invoker.cache_handlers();
-
 		if (g_running)
 		{
 			g_script_mgr.tick();
