@@ -2024,3 +2024,19 @@ enum class GameMode : int32_t
 	Tennis        = 0xC,
 	ShootingRange = 0xD
 };
+
+enum class eRosPrivilege : uint32_t
+{
+	CREATE_TICKET = 1,
+	MULTIPLAYER = 3,
+	LEADERBOARD_WRITE = 4,
+	BANNED = 7,
+	PRIVATE_MSG = 9,
+	SOCIAL_CLUB = 10,
+	CHEATER = 20,
+	PLAYED_LAST_GEN = 24,
+	SPECIAL_EDITION_CONTENT = 25,
+	MP_TEXT_COMMUNICATION = 29,
+	MP_VOICE_COMMUNICATION = 30,
+	REPORTING = 31,
+};
