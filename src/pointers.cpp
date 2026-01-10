@@ -117,8 +117,12 @@ namespace big
 		main_batch.add("ProfileStats Write Request", "10 ? 89 ? 31 D2 41 89 ? E8", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 			m_profile_stats_save = ptr.add(10).rip().as<PVOID>();
 		});
+
 		main_batch.add("Network Can Access Multiplayer", "74 E0 33 D2 8B CB", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_network_can_access_multiplayer = ptr.add(7).rip().as<PVOID>();
+		});
+		main_batch.add("Network Can Access Multiplayer", "B9 01 00 00 00 31 D2 E8 ? ? ? ? 48 8B 0D", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_network_can_access_multiplayer = ptr.add(8).rip().add(1).rip().as<PVOID>();
 		});
 
 		main_batch.add("Create Stat", "44 8A 45 70", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
@@ -177,6 +181,13 @@ namespace big
 		});
 		main_batch.add("Construct Basket", "48 83 EC 20 45 89 CF 44 89 C5", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 			m_construct_basket = ptr.sub(10).as<PVOID>();
+		});
+
+		main_batch.add("Has Privilege", "76 ? BA 05 00 00 00 E8", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
+			m_has_privilege = ptr.add(8).rip().as<PVOID>();
+		});
+		main_batch.add("Has Privilege", "BA 1B 00 00 00 E8 ? ? ? ? EB", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_has_privilege = ptr.add(6).rip().as<PVOID>();
 		});
 
 		main_batch.run(memory::module(nullptr));

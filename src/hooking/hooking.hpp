@@ -13,6 +13,7 @@ namespace big
 	{
 		static bool run_script_threads(std::uint32_t ops_to_execute);
 
+		static bool has_privilege(void* p1, uint32_t privilege);
 		static uint32_t network_can_access_multiplayer(uint32_t a1, uint64_t* a2);
 		static void create_native(void* a1, rage::scrNativeHash native_hash, rage::scrNativeHandler native_func);
 
