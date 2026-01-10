@@ -30,10 +30,7 @@ namespace big
 		detour_hook_helper::add<hooks::run_script_threads>("Script hook", (void*)g_pointers->m_run_script_threads);
 		detour_hook_helper::add<hooks::create_native>("Create Native", (void*)g_pointers->m_create_native);
 
-		if(!g_is_enhanced)
-		{
-			detour_hook_helper::add<hooks::network_can_access_multiplayer>("Network Can Access Multiplayer", (void*)g_pointers->m_network_can_access_multiplayer);
-		}
+		detour_hook_helper::add<hooks::network_can_access_multiplayer>("Network Can Access Multiplayer", (void*)g_pointers->m_network_can_access_multiplayer);
 		detour_hook_helper::add<hooks::has_privilege>("Has Privilege", (void*)g_pointers->m_has_privilege);
 
 		detour_hook_helper::add<hooks::create_stat>("Create Stat", (void*)g_pointers->m_create_stat);

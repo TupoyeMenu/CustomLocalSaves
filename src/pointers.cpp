@@ -117,8 +117,12 @@ namespace big
 		main_batch.add("ProfileStats Write Request", "10 ? 89 ? 31 D2 41 89 ? E8", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
 			m_profile_stats_save = ptr.add(10).rip().as<PVOID>();
 		});
+
 		main_batch.add("Network Can Access Multiplayer", "74 E0 33 D2 8B CB", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
 			m_network_can_access_multiplayer = ptr.add(7).rip().as<PVOID>();
+		});
+		main_batch.add("Network Can Access Multiplayer", "B9 01 00 00 00 31 D2 E8 ? ? ? ? 48 8B 0D", -1, -1, eGameBranch::Enhanced, [this](memory::handle ptr) {
+			m_network_can_access_multiplayer = ptr.add(8).rip().add(1).rip().as<PVOID>();
 		});
 
 		main_batch.add("Create Stat", "44 8A 45 70", -1, -1, eGameBranch::Legacy, [this](memory::handle ptr) {
